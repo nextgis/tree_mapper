@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 41.2 (35397) - http://www.bohemiancoding.com/sketch -->
+    <title>pin-yellow</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <radialGradient cx="50%" cy="50%" fx="50%" fy="50%" r="50%" id="radialGradient-1">
+            <stop stop-color="#F9E07A" offset="0%"></stop>
+            <stop stop-color="#F9E07A" stop-opacity="0" offset="100%"></stop>
+        </radialGradient>
+    </defs>
+    <g id="Page-2" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Mobile-Portrait" transform="translate(-150.000000, -59.000000)">
+            <g id="pin-yellow" transform="translate(150.000000, 59.000000)">
+                <circle id="Oval-Copy" fill="url(#radialGradient-1)" opacity="0.5" cx="12" cy="12" r="12"></circle>
+                <circle id="Oval" fill="#F0D773" cx="12" cy="12" r="4.8"></circle>
+            </g>
+        </g>
+    </g>
+</svg>

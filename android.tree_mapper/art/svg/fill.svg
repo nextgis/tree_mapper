@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="14px" height="18px" viewBox="0 0 14 18" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 41.2 (35397) - http://www.bohemiancoding.com/sketch -->
+    <title>Fill</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-2" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Mobile-Portrait-Copy-6" transform="translate(-153.000000, -319.000000)" fill="#000000">
+            <path d="M165.999,323.001 L153.999,323.001 L153.999,335.001 C153.999,336.105 154.895,337.001 156,337.001 L163.999,337.001 C165.105,337.001 165.999,336.105 165.999,335.001 L165.999,323.001 M162.499,319 L157.499,319 L156.5,320.001 L153.999,320.001 C153.448,320.001 153,320.449 153,321 L153,322.001 L167,322.001 L167,321 C167,320.449 166.552,320.001 165.999,320.001 L163.5,320.001 L162.499,319" id="Fill"></path>
+        </g>
+    </g>
+</svg>

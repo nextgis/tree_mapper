@@ -1,0 +1,6 @@
+[submodule "android.tree_mapper/maplib"]
+	path = android.tree_mapper/maplib
+	url = git@github.com:nextgis/android_maplib.git
+[submodule "android.tree_mapper/maplibui"]
+	path = android.tree_mapper/maplibui
+	url = git@github.com:nextgis/android_maplibui.git

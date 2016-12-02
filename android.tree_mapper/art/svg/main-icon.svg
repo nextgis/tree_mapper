@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="192px"
+   height="192px"
+   viewBox="0 0 192 192"
+   version="1.1"
+   id="svg3419"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="main-icon.svg"
+   inkscape:export-filename="/Users/Bishop/work/projects/hackathon/tree_mapper/android.tree_mapper/art/png/ic_launcher.png"
+   inkscape:export-xdpi="240"
+   inkscape:export-ydpi="240">
+  <metadata
+     id="metadata3447">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title>xxxhdpi/ic_launcher_APP Copy 6</dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1299"
+     inkscape:window-height="753"
+     id="namedview3445"
+     showgrid="false"
+     inkscape:zoom="2.8697917"
+     inkscape:cx="96"
+     inkscape:cy="96"
+     inkscape:window-x="56"
+     inkscape:window-y="0"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg3419" />
+  <!-- Generator: Sketch 41.2 (35397) - http://www.bohemiancoding.com/sketch -->
+  <title
+     id="title3421">xxxhdpi/ic_launcher_APP Copy 6</title>
+  <desc
+     id="desc3423">Created with Sketch.</desc>
+  <defs
+     id="defs3425">
+    <linearGradient
+       x1="71.2122601%"
+       y1="-12.8375948%"
+       x2="8.869973%"
+       y2="113.398047%"
+       id="linearGradient-1">
+      <stop
+         stop-color="#00C9FF"
+         offset="0%"
+         id="stop3428" />
+      <stop
+         stop-color="#92FE9D"
+         offset="100%"
+         id="stop3430" />
+    </linearGradient>
+  </defs>
+  <g
+     id="Page-1"
+     stroke="none"
+     stroke-width="1"
+     fill="none"
+     fill-rule="evenodd">
+    <g
+       id="xxxhdpi/ic_launcher_APP-Copy-6">
+      <rect
+         id="Rectangle"
+         fill="url(#linearGradient-1)"
+         x="0"
+         y="0"
+         width="192"
+         height="192" />
+      <g
+         id="tree-copy-6"
+         transform="translate(14.000000, 28.000000)"
+         fill="#FFFFFF">
+        <path
+           d="M42,140 C18.8392283,140 0,120.93239 0,97.490847 C-2.3989385e-15,78.6282646 16.7459807,0 42,0 C67.2540193,0 84,78.6282646 84,97.490847 C84,120.93239 65.1607717,140 42,140 Z M42.5,6 C24.1486111,6 6,73.6659591 6,98.0352879 C6,118.434333 22.3574074,135 42.5,135 C62.6425926,135 79,118.400106 79,98.0352879 C79,73.6659591 60.8513889,6 42.5,6 Z"
+           id="Shape" />
+        <rect
+           id="Rectangle-path"
+           x="40"
+           y="56"
+           width="6"
+           height="118" />
+        <path
+           d="M131,78 L131,56 L125,56 L125,78 L103,78 L103,84 L125,84 L125,106 L131,106 L131,84 L153,84 L153,78 L131,78 Z"
+           id="Combined-Shape" />
+        <rect
+           id="rect3439"
+           transform="translate(50.383598, 75.383598) rotate(45.000000) translate(-50.383598, -75.383598) "
+           x="47.6014178"
+           y="63.4811531"
+           width="6"
+           height="24" />
+        <rect
+           id="rect3441"
+           transform="translate(51.383598, 109.383598) rotate(45.000000) translate(-51.383598, -109.383598) "
+           x="48.6014178"
+           y="97.4811531"
+           width="6"
+           height="24" />
+        <rect
+           id="rect3443"
+           transform="translate(32.714536, 88.714536) rotate(45.000000) translate(-32.714536, -88.714536) "
+           x="18.956315"
+           y="85.905901"
+           width="28"
+           height="6" />
+      </g>
+    </g>
+  </g>
+</svg>
