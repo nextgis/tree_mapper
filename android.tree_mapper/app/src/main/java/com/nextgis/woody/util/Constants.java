@@ -21,6 +21,8 @@
 
 package com.nextgis.woody.util;
 
+import java.sql.Struct;
+
 /**
  * Created by bishop on 03.12.16.
  */
@@ -36,4 +38,16 @@ public interface Constants {
     String EMAIL_PATTERN = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
             + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
     String WTAG = "woody";
+    String KEY_IS_AUTHORIZED = "is_authorised";
+
+    /* keys */
+    String KEY_LT_AGE = "age";
+    String KEY_LT_HEIGHT = "height";
+    String KEY_LT_PLACEMENT = "placement";
+    String KEY_MAIN = "trees";
+    String KEY_LT_STATE = "state";
+    String KEY_LT_GIRTH = "girth";
+    String KEY_LT_YEAR = "year";
+    String KEY_LT_INJURY = "injury";
+    String KEY_LT_SPECIES = "species";
 }

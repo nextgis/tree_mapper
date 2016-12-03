@@ -7,4 +7,5 @@
     <string name="error_sign_up">Sign up failed</string>
     <string name="signing_up">Signing up...</string>
     <string name="first_run">First run</string>
+    <string name="error_init">Initialize error</string>
 </resources>

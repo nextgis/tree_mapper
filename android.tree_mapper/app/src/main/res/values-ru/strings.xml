@@ -26,7 +26,8 @@
     <string name="sign_up">Зарегистрироваться</string>
     <string name="error_weak_password">Слабый пароль</string>
     <string name="email_not_valid">Неверный адрес электронной почты</string>
-    <string name="error_sign_up">Sign up failed</string>
-    <string name="signing_up">Signing up...</string>
-    <string name="first_run">First run</string>
+    <string name="error_sign_up">Регистрация не выполнена</string>
+    <string name="signing_up">Регистрация...</string>
+    <string name="first_run">Первый запуск</string>
+    <string name="error_init">Щшибка инициализации</string>
 </resources>
