@@ -1,0 +1,24 @@
+body {
+    padding: 0;
+    margin: 0;
+}
+html, body, #map {
+    height: 100%;
+}
+
+
+
+
+#identifyFeatureName {
+font-weight: bolder;
+font-style: oblique;
+font-size: larger;
+
+
+}
+
+/*
+.leaflet-popup-content {
+    width:auto !important;
+}
+*/

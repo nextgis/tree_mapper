@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Woody</string>
+    <string name="email">e-mail</string>
+    <string name="sign_up">Sign up</string>
+    <string name="error_weak_password">Weak password</string>
+    <string name="email_not_valid">E-mail is not valid</string>
+    <string name="error_sign_up">Sign up failed</string>
+    <string name="signing_up">Signing up...</string>
 </resources>
