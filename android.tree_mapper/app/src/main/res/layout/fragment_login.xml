@@ -67,7 +67,9 @@ tools:context=".fragment.LoginFragment">
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_margin="10dp"
-        android:text="@string/sign_up"/>
+        android:text="@string/sign_up"
+        android:background="@color/accent"
+        android:textColor="@color/bt_text_color"/>
 
 </LinearLayout>
 </ScrollView>

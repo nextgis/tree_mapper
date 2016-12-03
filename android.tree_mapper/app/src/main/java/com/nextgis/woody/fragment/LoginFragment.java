@@ -24,6 +24,7 @@ package com.nextgis.woody.fragment;
 import android.app.ProgressDialog;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
@@ -52,7 +53,6 @@ import java.util.regex.Pattern;
 
 public class LoginFragment extends NGWLoginFragment {
     protected ProgressDialog mProgressDialog;
-    protected Button mSignUpButton;
 
     @Override
     public View onCreateView(
@@ -65,7 +65,7 @@ public class LoginFragment extends NGWLoginFragment {
         final View view = inflater.inflate(R.layout.fragment_login, container, false);
         mLogin = (EditText) view.findViewById(R.id.login);
         mPassword = (EditText) view.findViewById(R.id.password);
-        mSignUpButton = (Button) view.findViewById(R.id.signup);
+        mSignInButton = (Button) view.findViewById(R.id.signup);
 
         mLogin.addTextChangedListener(new EmailWatcher());
         mPassword.addTextChangedListener(new PasswordWatcher());
@@ -91,22 +91,6 @@ public class LoginFragment extends NGWLoginFragment {
         else
             ((TextInputLayout) mLogin.getParent()).setErrorEnabled(false);
     }
-
-    @Override
-    public void onResume()
-    {
-        super.onResume();
-        mSignUpButton.setOnClickListener(this);
-    }
-
-
-    @Override
-    public void onPause()
-    {
-        mSignUpButton.setOnClickListener(null);
-        super.onPause();
-    }
-
 
     @Override
     public void onClick(View v)
@@ -135,7 +119,7 @@ public class LoginFragment extends NGWLoginFragment {
                 if (result[0]) {
                     getLoaderManager().restartLoader(R.id.auth_token_loader, null, LoginFragment.this);
 
-                    mSignUpButton.setEnabled(false);
+                    mSignInButton.setEnabled(false);
                 } else
                     Toast.makeText(getActivity(), R.string.error_sign_up, Toast.LENGTH_LONG).show();
 
@@ -143,6 +127,8 @@ public class LoginFragment extends NGWLoginFragment {
                     mProgressDialog.dismiss();
             }
         };
+
+        new Handler().post(signUp);
     }
 
     @Override
@@ -175,7 +161,7 @@ public class LoginFragment extends NGWLoginFragment {
             } else {
                 Toast.makeText(getActivity(), R.string.error_login, Toast.LENGTH_SHORT).show();
 
-                mSignUpButton.setEnabled(true);
+                mSignInButton.setEnabled(true);
             }
         }
         else if(loader.getId() == R.id.non_auth_token_loader){
