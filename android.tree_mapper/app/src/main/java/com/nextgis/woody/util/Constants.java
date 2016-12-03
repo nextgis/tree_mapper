@@ -26,7 +26,8 @@ package com.nextgis.woody.util;
  */
 
 public interface Constants {
-    String ACCOUNT_NAME                 = "SafeForest";
+    String ACCOUNT_NAME                 = "Woody";
+    String ANONYMOUS                    = "anonymous";
 
     String FRAGMENT_LOGIN            = "NGWLogin";
     String FRAGMENT_ACCOUNT          = "woody_account";

@@ -24,13 +24,11 @@ package com.nextgis.woody.fragment;
 import android.app.ProgressDialog;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.Loader;
 import android.text.Editable;
-import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,7 +37,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.nextgis.maplib.api.IGISApplication;
 import com.nextgis.maplib.util.NGWUtil;
 import com.nextgis.maplibui.fragment.NGWLoginFragment;
 import com.nextgis.maplibui.service.HTTPLoader;
@@ -146,48 +143,6 @@ public class LoginFragment extends NGWLoginFragment {
                     mProgressDialog.dismiss();
             }
         };
-        showUserDataDialog(R.string.signing_up, signUp);
-    }
-
-    private void showUserDataDialog(final int message, final Runnable runnable) {
-        final UserDataDialog dialog = new UserDataDialog();
-
-        dialog.setOnPositiveClickedListener(new YesNoDialog.OnPositiveClickedListener() {
-            @Override
-            public void onPositiveClicked() {
-                mFullNameText = dialog.getFullNameText();
-                mPhoneText = dialog.getPhoneText();
-
-                if (TextUtils.isEmpty(mFullNameText) || TextUtils.isEmpty(mPhoneText)) {
-                    Toast.makeText(getActivity(), R.string.anonymous_hint, Toast.LENGTH_LONG).show();
-                    return;
-                }
-
-                if (!UiUtil.isPhoneValid(mPhoneText)) {
-                    Toast.makeText(getActivity(), R.string.phone_not_valid, Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                dialog.dismiss();
-
-                mProgressDialog.setMessage(getString(message));
-                mProgressDialog.setCancelable(false);
-                mProgressDialog.show();
-
-                new Handler().post(runnable);
-            }
-        });
-
-        dialog.setOnNegativeClickedListener(new YesNoDialog.OnNegativeClickedListener() {
-            @Override
-            public void onNegativeClicked() {
-                dialog.dismiss();
-            }
-        });
-
-        dialog.hideEmailField();
-        dialog.setKeepInstance(true);
-        dialog.show(getFragmentManager(), Constants.FRAGMENT_USER_DATA_DIALOG);
     }
 
     @Override
@@ -225,19 +180,6 @@ public class LoginFragment extends NGWLoginFragment {
         }
         else if(loader.getId() == R.id.non_auth_token_loader){
             onTokenReceived(Constants.ACCOUNT_NAME, Constants.ANONYMOUS);
-        }
-    }
-
-    public void onTokenReceived(
-            String accountName,
-            String token)
-    {
-        super.onTokenReceived(accountName, token);
-
-        IGISApplication app = (IGISApplication) getActivity().getApplication();
-        if (mForNewAccount) {
-            app.setUserData(accountName, SettingsConstants.KEY_USER_FULLNAME, mFullNameText);
-            app.setUserData(accountName, SettingsConstants.KEY_USER_PHONE, mPhoneText);
         }
     }
 
