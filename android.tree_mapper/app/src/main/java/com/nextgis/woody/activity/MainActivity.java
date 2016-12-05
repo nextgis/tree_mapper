@@ -1,30 +1,25 @@
 package com.nextgis.woody.activity;
 
 import android.accounts.Account;
+import android.app.ProgressDialog;
 import android.content.ContentResolver;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
-import android.support.design.widget.TabLayout;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.nextgis.maplib.datasource.Feature;
 import com.nextgis.maplib.datasource.ngw.Connection;
+import com.nextgis.maplib.datasource.ngw.INGWResource;
+import com.nextgis.maplib.datasource.ngw.Resource;
+import com.nextgis.maplib.datasource.ngw.ResourceGroup;
 import com.nextgis.maplib.map.MapBase;
-import com.nextgis.maplib.map.VectorLayer;
+import com.nextgis.maplib.map.NGWLookupTable;
 import com.nextgis.maplib.util.GeoConstants;
-import com.nextgis.maplib.util.MapUtil;
 import com.nextgis.maplib.util.NGException;
 import com.nextgis.maplibui.activity.NGActivity;
 import com.nextgis.maplibui.fragment.NGWLoginFragment;
@@ -39,14 +34,12 @@ import com.nextgis.woody.util.SettingsConstants;
 import org.json.JSONException;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Locale;
 
 public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAccountListener, View.OnClickListener {
 
 
-    MapBase mMap;
+    protected MapBase mMap;
+    protected boolean mFirstRun = true;
 
     @Override
     public void onClick(View v) {
@@ -77,10 +70,6 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
             Toast.makeText(this, R.string.error_init, Toast.LENGTH_SHORT).show();
     }
 
-    enum CURRENT_VIEW {ACCOUNT, INITIAL, NORMAL}
-    protected boolean mFirstRun = true;
-    protected int mCurrentViewState;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -98,11 +87,11 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
         mMap = app.getMap();
         final Account account = app.getAccount(Constants.ACCOUNT_NAME);
         // check if has safe forest account
-        if (account == null || mCurrentViewState == CURRENT_VIEW.ACCOUNT.ordinal()) {
+        if (account == null ) {
             createAccountView();
         } else {
             // check basic layers
-            if (!hasBasicLayers(app.getMap()) || mCurrentViewState == CURRENT_VIEW.INITIAL.ordinal()) {
+            if (!hasBasicLayers(app.getMap())) {
                 Log.d(Constants.WTAG, "Account " + Constants.ACCOUNT_NAME + " created. Run second step.");
                 loadData();
             }
@@ -121,7 +110,6 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
     }
 
     protected void createAccountView() {
-        mCurrentViewState = CURRENT_VIEW.ACCOUNT.ordinal();
         setContentView(R.layout.activity_main_first);
         setToolbar(R.id.main_toolbar);
         setTitle(getText(R.string.first_run));
@@ -143,54 +131,171 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
     protected void loadData() {
         final MainApplication app = (MainApplication) getApplication();
         final Account account = app.getAccount(Constants.ACCOUNT_NAME);
-        final String sLogin = app.getAccountLogin(account);
-        final String sPassword = app.getAccountPassword(account);
-        String URL = app.getAccountUrl(account);
 
-        if (null == URL || null == sLogin) {
-            return;
+
+        class DownloadTask extends AsyncTask<Account, Integer, String> {
+            private ProgressDialog mProgressDialog;
+            private String mCurrentMessage;
+
+            @Override
+            protected void onPreExecute() {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+                    mProgressDialog = new ProgressDialog(MainActivity.this, android.R.style.Theme_Material_Light_Dialog_Alert);
+                else
+                    mProgressDialog = new ProgressDialog(MainActivity.this);
+
+                mProgressDialog.setTitle(R.string.process_layer);
+                mProgressDialog.setMax(Constants.KEY_COUNT + 2);
+                mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+                mProgressDialog.setCancelable(false);
+
+                mProgressDialog.show();
+            }
+
+            @Override
+            protected String doInBackground(Account... params) {
+                final String sLogin = app.getAccountLogin(account);
+                final String sPassword = app.getAccountPassword(account);
+                final String URL = app.getAccountUrl(account);
+
+                if (null == URL || null == sLogin) {
+                    return getString(R.string.error_auth);
+                }
+
+                int progress = 0;
+
+                Connection connection = new Connection("tmp", sLogin, sPassword, URL);
+
+                if (!connection.connect(false)) {
+                    return getString(R.string.error_sign_up);
+                }
+
+                // Setup progress dialog.
+                mCurrentMessage = getString(R.string.look_for_city);
+                publishProgress(progress++);
+                connection.loadChildren();
+
+                // 1. Get city resource by key.
+                INGWResource resource = null;
+                for(int i = 0; i < connection.getChildrenCount(); ++i) {
+                    resource = connection.getChild(i);
+                    if(resource.getKey().equals(SettingsConstants.CITY_KEY)) {
+                        break;
+                    }
+                    resource = null;
+                }
+
+                // Check if the city is found.
+                if(null == resource) {
+                    return getString(R.string.error_city_found);
+                }
+
+                mCurrentMessage = getString(R.string.create_base_map);
+                publishProgress(progress++);
+
+                // 2. Add background layer on map.
+
+                RemoteTMSLayerUI layer = new RemoteTMSLayerUI(getApplicationContext(), mMap.createLayerStorage());
+                layer.setName(SettingsConstants.BASEMAP_NAME);
+                layer.setURL(SettingsConstants.BASEMAP_URL);
+                layer.setTMSType(GeoConstants.TMSTYPE_OSM);
+                layer.setMaxZoom(GeoConstants.DEFAULT_MAX_ZOOM);
+                layer.setMinZoom(GeoConstants.DEFAULT_MIN_ZOOM);
+                layer.setVisible(true);
+                mMap.addLayer(layer);
+
+                // 3. Get tables for map.
+
+                mCurrentMessage = getString(R.string.start_fill_layer);
+                publishProgress(progress++);
+
+                ResourceGroup cityGroup = (ResourceGroup) resource;
+                cityGroup.loadChildren();
+                Resource cityResource;
+                for(int i = 0; i < cityGroup.getChildrenCount(); ++i) {
+                    cityResource = (Resource) cityGroup.getChild(i);
+
+                    if(cityResource.getKey().equals(Constants.KEY_MAIN)) {
+                        publishProgress(progress++);
+
+                        // Add trees layer on map.
+                        NGWVectorLayerUI ngwVectorLayer = new NGWVectorLayerUI(getApplicationContext(), mMap.createLayerStorage(cityResource.getKey()));
+
+                        ngwVectorLayer.setName(cityResource.getName());
+                        ngwVectorLayer.setRemoteId(cityResource.getRemoteId());
+                        ngwVectorLayer.setAccountName(account.name);
+                        ngwVectorLayer.setSyncType(com.nextgis.maplib.util.Constants.SYNC_ALL);
+                        ngwVectorLayer.setMinZoom(GeoConstants.DEFAULT_MIN_ZOOM);
+                        ngwVectorLayer.setMaxZoom(GeoConstants.DEFAULT_MAX_ZOOM);
+                        ngwVectorLayer.setVisible(true);
+
+                        // Set style based on state field.
+
+                        mMap.addLayer(ngwVectorLayer);
+
+                        try {
+                            ngwVectorLayer.createFromNGW(null);
+                        } catch (NGException | IOException | JSONException e) {
+                            mMap.delete();
+
+                            e.printStackTrace();
+                            return e.getLocalizedMessage();
+                        }
+                    }
+                    else if(isLookupTable(cityResource)) {
+                        publishProgress(progress++);
+
+                        NGWLookupTable ngwTable =
+                                new NGWLookupTable(getApplicationContext(), mMap.createLayerStorage(cityResource.getKey()));
+
+                        ngwTable.setName(cityResource.getName());
+                        ngwTable.setRemoteId(cityResource.getRemoteId());
+                        ngwTable.setAccountName(account.name);
+                        ngwTable.setSyncType(com.nextgis.maplib.util.Constants.SYNC_DATA);
+
+                        try {
+                            ngwTable.fillFromNGW(null);
+                        } catch (NGException | IOException | JSONException e) {
+                            mMap.delete();
+
+                            e.printStackTrace();
+                            return e.getLocalizedMessage();
+                        }
+                    }
+                }
+
+                mMap.save();
+
+                return getString(R.string.success_filled);
+            }
+
+            @Override
+            protected void onProgressUpdate(Integer... progress) {
+                mProgressDialog.setProgress(progress[0]);
+                mProgressDialog.setMessage(mCurrentMessage);
+            }
+
+            @Override
+            protected void onPostExecute(String result) {
+                if (mProgressDialog.isShowing())
+                    mProgressDialog.dismiss();
+                Toast.makeText(MainActivity.this, result, Toast.LENGTH_LONG).show();
+            }
         }
 
-        Connection connection = new Connection("tmp", sLogin, sPassword, URL);
+        new DownloadTask().execute(account);
+    }
 
-        if (!connection.connect(false)) {
-            return;
-        }
-
-        // add background layer
-        RemoteTMSLayerUI layer = new RemoteTMSLayerUI(getApplicationContext(), mMap.createLayerStorage());
-        layer.setName(SettingsConstants.BASEMAP_NAME);
-        layer.setURL(SettingsConstants.BASEMAP_URL);
-        layer.setTMSType(GeoConstants.TMSTYPE_OSM);
-        layer.setMaxZoom(GeoConstants.DEFAULT_MAX_ZOOM);
-        layer.setMinZoom(GeoConstants.DEFAULT_MIN_ZOOM);
-        layer.setVisible(true);
-        mMap.addLayer(layer);
-
-        // TODO: scan SettingsConstants.CITY_ID to get layers id's
-
-        // add trees
-        NGWVectorLayerUI ngwVectorLayer = new NGWVectorLayerUI(getApplicationContext(), mMap.createLayerStorage(Constants.KEY_MAIN));
-
-        ngwVectorLayer.setName(Constants.KEY_MAIN);
-        ngwVectorLayer.setRemoteId(10); //(mKeys.get(layerName).getRemoteId());
-        ngwVectorLayer.setAccountName(account.name);
-        ngwVectorLayer.setSyncType(com.nextgis.maplib.util.Constants.SYNC_ALL);
-        ngwVectorLayer.setMinZoom(GeoConstants.DEFAULT_MIN_ZOOM);
-        ngwVectorLayer.setMaxZoom(GeoConstants.DEFAULT_MAX_ZOOM);
-        ngwVectorLayer.setVisible(true);
-
-        mMap.addLayer(ngwVectorLayer);
-
-        try {
-            ngwVectorLayer.createFromNGW(null);
-        } catch (NGException | IOException | JSONException e) {
-            e.printStackTrace();
-            return;
-        }
-
-        mMap.save();
-
+    private boolean isLookupTable(INGWResource resource) {
+        return resource.getKey().equals(Constants.KEY_LT_AGE) ||
+                resource.getKey().equals(Constants.KEY_LT_GIRTH) ||
+                resource.getKey().equals(Constants.KEY_LT_GIRTH) ||
+                resource.getKey().equals(Constants.KEY_LT_HEIGHT) ||
+                resource.getKey().equals(Constants.KEY_LT_INJURY) ||
+                resource.getKey().equals(Constants.KEY_LT_PLACEMENT) ||
+                resource.getKey().equals(Constants.KEY_LT_SPECIES) ||
+                resource.getKey().equals(Constants.KEY_LT_STATE) ||
+                resource.getKey().equals(Constants.KEY_LT_YEAR);
     }
 
     protected boolean hasBasicLayers(MapBase map) {
@@ -198,6 +303,10 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
     }
 
     protected void createNormalView() {
+        //PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
+        setContentView(R.layout.activity_main);
+        setToolbar(R.id.main_toolbar);
+        setTitle(getText(R.string.app_name));
     }
 }

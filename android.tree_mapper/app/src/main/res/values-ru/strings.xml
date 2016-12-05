@@ -30,4 +30,8 @@
     <string name="signing_up">Регистрация...</string>
     <string name="first_run">Первый запуск</string>
     <string name="error_init">Щшибка инициализации</string>
+    <string name="look_for_city">Выбор города</string>
+    <string name="create_base_map">Создание картподложки</string>
+    <string name="error_city_found">Город не найден</string>
+    <string name="success_filled">Данные згружены</string>
 </resources>

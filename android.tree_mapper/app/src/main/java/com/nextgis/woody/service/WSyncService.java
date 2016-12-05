@@ -19,18 +19,22 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.nextgis.woody.util;
+package com.nextgis.woody.service;
 
-/**
- * Created by bishop on 03.12.16.
- */
+import android.content.Context;
 
-public interface SettingsConstants {
-    String AUTHORITY = "com.nextgis.woody.provider";
-    String SITE_URL = "http://176.9.38.120/tree_mapping";
-    String CITY_KEY = "kaliningrad";
+import com.nextgis.maplib.datasource.ngw.SyncAdapter;
+import com.nextgis.maplib.service.NGWSyncService;
 
-    String BASEMAP_NAME = "base map";
-    String BASEMAP_URL = "https://api.mapbox.com/styles/v1/nasnimal/cir3nj27y004kcmkgfnw6u68o/tiles/256/{z}/{x}/{y}/?access_token=pk.eyJ1IjoibmFzbmltYWwiLCJhIjoiY2lvNXcxb29nMDA0YXc2bHkwc2hpNTB2MSJ9.C6eEm-ifqAKsgBIC_5mGZw";
 
+public class WSyncService
+        extends NGWSyncService
+{
+    @Override
+    protected SyncAdapter createSyncAdapter(
+            Context context,
+            boolean autoInitialize)
+    {
+        return new SyncAdapter(context, autoInitialize);
+    }
 }

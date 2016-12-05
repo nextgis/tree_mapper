@@ -8,4 +8,8 @@
     <string name="signing_up">Signing up...</string>
     <string name="first_run">First run</string>
     <string name="error_init">Initialize error</string>
+    <string name="look_for_city">Look for city</string>
+    <string name="create_base_map">Create base map</string>
+    <string name="error_city_found">City not found</string>
+    <string name="success_filled">Data loaded</string>
 </resources>

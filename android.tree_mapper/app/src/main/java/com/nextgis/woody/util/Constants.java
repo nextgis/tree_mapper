@@ -50,4 +50,5 @@ public interface Constants {
     String KEY_LT_YEAR = "year";
     String KEY_LT_INJURY = "injury";
     String KEY_LT_SPECIES = "species";
+    int KEY_COUNT = 9; // mast be equal of KEY_ strings count
 }

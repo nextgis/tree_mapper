@@ -108,9 +108,7 @@ public class LoginFragment extends NGWLoginFragment {
                 Thread t = new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        //TODO: Fix autoregister
-                        //result[0] = NGWUtil.signUp(mUrlText, mLogin.getText().toString(), mPassword.getText().toString(), null, null);
-                        result[0] = true;
+                        result[0] = NGWUtil.signUp(mUrlText, mLogin.getText().toString(), mPassword.getText().toString(), null, null);
                     }
                 });
                 t.start();
