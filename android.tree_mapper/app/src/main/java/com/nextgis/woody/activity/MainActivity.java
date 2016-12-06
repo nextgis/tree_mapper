@@ -28,6 +28,7 @@ import com.nextgis.maplibui.mapui.RemoteTMSLayerUI;
 import com.nextgis.woody.MainApplication;
 import com.nextgis.woody.R;
 import com.nextgis.woody.fragment.LoginFragment;
+import com.nextgis.woody.fragment.MapFragment;
 import com.nextgis.woody.util.Constants;
 import com.nextgis.woody.util.SettingsConstants;
 
@@ -121,7 +122,7 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
             ngwLoginFragment = new LoginFragment();
 
         FragmentTransaction ft = fm.beginTransaction();
-        ft.replace(com.nextgis.maplibui.R.id.login_frame, ngwLoginFragment, Constants.FRAGMENT_LOGIN);
+        ft.replace(R.id.login_frame, ngwLoginFragment, Constants.FRAGMENT_LOGIN);
         ft.commit();
         ngwLoginFragment.setForNewAccount(true);
         ngwLoginFragment.setOnAddAccountListener(this);
@@ -221,7 +222,7 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
                         // Add trees layer on map.
                         NGWVectorLayerUI ngwVectorLayer = new NGWVectorLayerUI(getApplicationContext(), mMap.createLayerStorage(cityResource.getKey()));
 
-                        ngwVectorLayer.setName(cityResource.getName());
+                        ngwVectorLayer.setName(Constants.KEY_MAIN);
                         ngwVectorLayer.setRemoteId(cityResource.getRemoteId());
                         ngwVectorLayer.setAccountName(account.name);
                         ngwVectorLayer.setSyncType(com.nextgis.maplib.util.Constants.SYNC_ALL);
@@ -308,5 +309,15 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
         setContentView(R.layout.activity_main);
         setToolbar(R.id.main_toolbar);
         setTitle(getText(R.string.app_name));
+
+        FragmentManager fm = getSupportFragmentManager();
+        MapFragment mapFragment = (MapFragment) fm.findFragmentByTag(Constants.FRAGMENT_MAP);
+
+        if (mapFragment == null)
+            mapFragment = new MapFragment();
+
+        FragmentTransaction ft = fm.beginTransaction();
+        ft.replace(R.id.map_frame, mapFragment, Constants.FRAGMENT_MAP);
+        ft.commit();
     }
 }

@@ -32,6 +32,7 @@ public interface Constants {
     String ANONYMOUS                    = "anonymous";
 
     String FRAGMENT_LOGIN            = "NGWLogin";
+    String FRAGMENT_MAP              = "NGWMap";
     String FRAGMENT_ACCOUNT          = "woody_account";
 
     String PASSWORD_PATTERN = "^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$";

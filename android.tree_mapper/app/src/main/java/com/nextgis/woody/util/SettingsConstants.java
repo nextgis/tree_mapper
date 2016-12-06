@@ -33,4 +33,14 @@ public interface SettingsConstants {
     String BASEMAP_NAME = "base map";
     String BASEMAP_URL = "https://api.mapbox.com/styles/v1/nasnimal/cir3nj27y004kcmkgfnw6u68o/tiles/256/{z}/{x}/{y}/?access_token=pk.eyJ1IjoibmFzbmltYWwiLCJhIjoiY2lvNXcxb29nMDA0YXc2bHkwc2hpNTB2MSJ9.C6eEm-ifqAKsgBIC_5mGZw";
 
+    String KEY_PREF_USERMINX = "user_minx";
+    String KEY_PREF_USERMINY = "user_miny";
+    String KEY_PREF_USERMAXX = "user_maxx";
+    String KEY_PREF_USERMAXY = "user_maxy";
+
+    String KEY_PREF_SCROLL_X      = "map_scroll_x";
+    String KEY_PREF_SCROLL_Y      = "map_scroll_y";
+    String KEY_PREF_ZOOM_LEVEL    = "map_zoom_level";
+
+    String KEY_PREF_MAP_FIRST_VIEW = "map_first_view";
 }
