@@ -40,4 +40,5 @@ dependencies {
     compile 'com.android.support:appcompat-v7:24.1.1'
     compile 'com.android.support:preference-v7:24.1.1'
     compile 'com.android.support:design:24.1.1'
+    compile 'com.nineoldandroids:library:2.4.0'
 }

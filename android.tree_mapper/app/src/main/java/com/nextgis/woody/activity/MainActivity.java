@@ -13,10 +13,13 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.nextgis.maplib.api.ILayer;
+import com.nextgis.maplib.api.ILayerView;
 import com.nextgis.maplib.datasource.ngw.Connection;
 import com.nextgis.maplib.datasource.ngw.INGWResource;
 import com.nextgis.maplib.datasource.ngw.Resource;
 import com.nextgis.maplib.datasource.ngw.ResourceGroup;
+import com.nextgis.maplib.map.Layer;
 import com.nextgis.maplib.map.MapBase;
 import com.nextgis.maplib.map.NGWLookupTable;
 import com.nextgis.maplib.util.GeoConstants;
@@ -27,6 +30,7 @@ import com.nextgis.maplibui.mapui.NGWVectorLayerUI;
 import com.nextgis.maplibui.mapui.RemoteTMSLayerUI;
 import com.nextgis.woody.MainApplication;
 import com.nextgis.woody.R;
+import com.nextgis.woody.display.TreeRenderer;
 import com.nextgis.woody.fragment.LoginFragment;
 import com.nextgis.woody.fragment.MapFragment;
 import com.nextgis.woody.util.Constants;
@@ -203,6 +207,7 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
                 layer.setMaxZoom(GeoConstants.DEFAULT_MAX_ZOOM);
                 layer.setMinZoom(GeoConstants.DEFAULT_MIN_ZOOM);
                 layer.setVisible(true);
+                layer.setCacheSizeMultiply(2);
                 mMap.addLayer(layer);
 
                 // 3. Get tables for map.
@@ -304,6 +309,11 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
     }
 
     protected void createNormalView() {
+
+        ILayer layer = mMap.getLayerByName(Constants.KEY_MAIN);
+        ILayerView layerView = (ILayerView) layer;
+        layerView.setRenderer(new TreeRenderer((Layer) layer));
+
         //PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
         setContentView(R.layout.activity_main);
