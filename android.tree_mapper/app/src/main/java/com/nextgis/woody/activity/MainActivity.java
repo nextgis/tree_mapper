@@ -66,9 +66,6 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
             ContentResolver.addPeriodicSync( account, app.getAuthority(), Bundle.EMPTY,
                     com.nextgis.maplib.util.Constants.DEFAULT_SYNC_PERIOD);
 
-            // load data
-            loadData();
-
             // goto step 2
             refreshActivityView();
         } else
@@ -78,12 +75,6 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
-        setContentView(R.layout.activity_main);
-        setToolbar(R.id.main_toolbar);
-        setTitle(getText(R.string.app_name));
-
         start();
     }
 
@@ -98,12 +89,13 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
             // check basic layers
             if (!hasBasicLayers(app.getMap())) {
                 Log.d(Constants.WTAG, "Account " + Constants.ACCOUNT_NAME + " created. Run second step.");
-                loadData();
+                createFirstRunView();
             }
-
-            Log.d(Constants.WTAG, "Account " + Constants.ACCOUNT_NAME + " created. Layers created. Run normal view.");
-            mFirstRun = false;
-            createNormalView();
+            else {
+                Log.d(Constants.WTAG, "Account " + Constants.ACCOUNT_NAME + " created. Layers created. Run normal view.");
+                mFirstRun = false;
+                createNormalView();
+            }
         }
     }
 
@@ -133,6 +125,14 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
         ngwLoginFragment.setUrlText(SettingsConstants.SITE_URL);
     }
 
+    protected void createFirstRunView() {
+        setContentView(R.layout.activity_main_load);
+        setToolbar(R.id.main_toolbar);
+        setTitle(getText(R.string.message_loading));
+
+        loadData();
+    }
+
     protected void loadData() {
         final MainApplication app = (MainApplication) getApplication();
         final Account account = app.getAccount(Constants.ACCOUNT_NAME);
@@ -149,7 +149,7 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
                 else
                     mProgressDialog = new ProgressDialog(MainActivity.this);
 
-                mProgressDialog.setTitle(R.string.process_layer);
+                mProgressDialog.setTitle(R.string.processing);
                 mProgressDialog.setMax(Constants.KEY_COUNT + 2);
                 mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
                 mProgressDialog.setCancelable(false);
@@ -286,6 +286,7 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
                 if (mProgressDialog.isShowing())
                     mProgressDialog.dismiss();
                 Toast.makeText(MainActivity.this, result, Toast.LENGTH_LONG).show();
+                refreshActivityView();
             }
         }
 
@@ -311,6 +312,9 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
     protected void createNormalView() {
 
         ILayer layer = mMap.getLayerByName(Constants.KEY_MAIN);
+        if(null == layer)
+            return;
+
         ILayerView layerView = (ILayerView) layer;
         layerView.setRenderer(new TreeRenderer((Layer) layer));
 

@@ -99,7 +99,7 @@ public class LoginFragment extends NGWLoginFragment {
             Toast.makeText(getActivity(), R.string.email_not_valid, Toast.LENGTH_SHORT).show();
             return;
         }
-
+        mSignInButton.setEnabled(false);
         Runnable signUp = new Runnable() {
             @Override
             public void run() {
@@ -113,18 +113,20 @@ public class LoginFragment extends NGWLoginFragment {
                 });
                 t.start();
 
-                while (t.isAlive())
+                while (t.isAlive()) {
                     SystemClock.sleep(300);
+                }
 
                 if (result[0]) {
                     getLoaderManager().restartLoader(R.id.auth_token_loader, null, LoginFragment.this);
-
-                    mSignInButton.setEnabled(false);
-                } else
+                }
+                else {
                     Toast.makeText(getActivity(), R.string.error_sign_up, Toast.LENGTH_LONG).show();
+                }
 
-                if (mProgressDialog.isShowing())
+                if (mProgressDialog.isShowing()) {
                     mProgressDialog.dismiss();
+                }
             }
         };
 
@@ -158,13 +160,14 @@ public class LoginFragment extends NGWLoginFragment {
         if (loader.getId() == R.id.auth_token_loader) {
             if (token != null && token.length() > 0) {
                 onTokenReceived(Constants.ACCOUNT_NAME, token);
-            } else {
+            }
+            else {
                 Toast.makeText(getActivity(), R.string.error_login, Toast.LENGTH_SHORT).show();
 
                 mSignInButton.setEnabled(true);
             }
         }
-        else if(loader.getId() == R.id.non_auth_token_loader){
+        else if(loader.getId() == R.id.non_auth_token_loader) {
             onTokenReceived(Constants.ACCOUNT_NAME, Constants.ANONYMOUS);
         }
     }
