@@ -47,6 +47,11 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
     protected boolean mFirstRun = true;
 
     @Override
+    public int getThemeId() {
+        return R.style.AppTheme;
+    }
+
+    @Override
     public void onClick(View v) {
 
     }

@@ -1,16 +1,17 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat">
+    <style name="AppTheme" parent="Theme.NextGIS.AppCompat.Light">
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryDark">@color/primary_dark</item>
         <item name="colorAccent">@color/accent</item>
+        <item name="ThemeOverlay.NextGIS.Toolbar">@style/Theme.Woody.ActionBarTheme</item>
     </style>
 
-    <style name="AppCompatDialog_Light" parent="Theme.AppCompat.Light.Dialog.Alert">
-        <item name="colorPrimary">@color/primary</item>
-        <item name="colorPrimaryDark">@color/primary_dark</item>
-        <item name="colorAccent">@color/accent</item>
+    <style name="Theme.Woody.ActionBarTheme" parent="Theme.NextGIS.AppCompat.ActionBar">
+        <item name="android:textColorPrimary">@color/textColorPrimary.Light</item>
+        <item name="titleTextColor">@color/textColorPrimary.Light</item>
+        <item name="subtitleTextColor">@color/textColorSecondary.Light</item>
     </style>
 
 </resources>
