@@ -26,16 +26,24 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import com.keenfin.easypicker.PhotoPicker;
 import com.nextgis.maplib.api.ILayer;
 import com.nextgis.maplib.datasource.Feature;
 import com.nextgis.maplib.datasource.GeoPoint;
 import com.nextgis.maplib.map.MapBase;
 import com.nextgis.maplib.map.VectorLayer;
+import com.nextgis.maplib.util.AttachItem;
+import com.nextgis.maplibui.util.ControlHelper;
 import com.nextgis.woody.R;
 import com.nextgis.woody.activity.MainActivity;
 import com.nextgis.woody.util.Constants;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * Created by bishop on 10.12.16.
@@ -50,6 +58,7 @@ public class TreeDetailsFragment extends Fragment implements View.OnClickListene
     private TextView tvState;
     private TextView tvHeight;
     private Feature currentFeature;
+    private FrameLayout frameLayout;
 
     @Override
     public View onCreateView(
@@ -69,6 +78,8 @@ public class TreeDetailsFragment extends Fragment implements View.OnClickListene
         view.findViewById(R.id.delete_action).setOnClickListener(this);
         view.findViewById(R.id.edit_action).setOnClickListener(this);
 
+        frameLayout = (FrameLayout) view.findViewById(R.id.photo_gallery);
+
         currentFeature = null;
 
         return view;
@@ -82,7 +93,35 @@ public class TreeDetailsFragment extends Fragment implements View.OnClickListene
         pt.project(4326);
         tvCoordinates.setText( String.format( "%.6f, %.6f", pt.getY(), pt.getX()) );
 
-        //feature.getAttachments();
+        Map<String, AttachItem> attaches = feature.getAttachments();
+        if (attaches.size() > 0) {
+            final ArrayList<String> paths = new ArrayList<>();
+            MapBase mapBase = MapBase.getInstance();
+            ILayer layer = mapBase.getLayerByName(Constants.KEY_MAIN);
+
+            File attachFolder = new File(layer.getPath(), Long.toString(feature.getId()));
+            for(String key : attaches.keySet()) {
+                File attachFile = new File(attachFolder, key);
+                paths.add(attachFile.getPath());
+            }
+            final PhotoPicker gallery = new PhotoPicker(getActivity(), true);
+            int px = ControlHelper.dpToPx(16, getResources());
+            gallery.setDefaultPreview(true);
+            gallery.setPadding(px, 0, px, 0);
+            gallery.post(new Runnable() {
+                @Override
+                public void run() {
+                    gallery.restoreImages(paths);
+                }
+            });
+
+            frameLayout.addView(gallery);
+        }
+        else {
+            frameLayout.removeAllViews();
+        }
+
+
         tvGirth.setText(feature.getFieldValueAsString(Constants.KEY_LT_GIRTH));
         tvAge.setText(feature.getFieldValueAsString(Constants.KEY_LT_AGE));
         tvState.setText(feature.getFieldValueAsString(Constants.KEY_LT_STATE));
