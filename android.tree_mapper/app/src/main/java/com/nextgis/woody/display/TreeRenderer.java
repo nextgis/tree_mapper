@@ -39,11 +39,19 @@ import static com.nextgis.maplib.display.SimpleMarkerStyle.MarkerStyleCircle;
  */
 
 public class TreeRenderer extends SimpleFeatureRenderer {
+
+    private long selectedFeature;
+
     public TreeRenderer(Layer layer) {
         super(layer);
         SimpleMarkerStyle simpleFeatureRenderer = new SimpleMarkerStyle(Color.parseColor("#ff9b9b9b"), Color.parseColor("#329b9b9b"), 10, MarkerStyleCircle);
         simpleFeatureRenderer.setWidth(12);
         mStyle = simpleFeatureRenderer;
+        selectedFeature = -1;
+    }
+
+    public void setSelectedFeature(long featureId) {
+        selectedFeature = featureId;
     }
 
     @Override
@@ -51,7 +59,12 @@ public class TreeRenderer extends SimpleFeatureRenderer {
         Feature feature = ((VectorLayer) mLayerRef.get()).getFeature(featureId);
         String status = (String) feature.getFieldValue(Constants.KEY_LT_STATE);
         int color, outColor;
-        if(status == null || status.equals("Здоровое")) {
+        if(featureId == selectedFeature) {
+
+            color = Color.parseColor("#ff039be5");
+            outColor = Color.parseColor("#32000000");
+        }
+        else if(status == null || status.equals("Здоровое")) {
             color = Color.parseColor("#ff59e09a");
             outColor = Color.parseColor("#3259e09a");
         }

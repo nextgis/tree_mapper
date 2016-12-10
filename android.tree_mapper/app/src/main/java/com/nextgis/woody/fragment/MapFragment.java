@@ -36,6 +36,7 @@ import android.widget.Toast;
 
 import com.nextgis.maplib.api.GpsEventListener;
 import com.nextgis.maplib.api.ILayer;
+import com.nextgis.maplib.datasource.Feature;
 import com.nextgis.maplib.datasource.GeoEnvelope;
 import com.nextgis.maplib.datasource.GeoPoint;
 import com.nextgis.maplib.location.GpsEventSource;
@@ -49,6 +50,8 @@ import com.nextgis.maplibui.util.ConstantsUI;
 import com.nextgis.maplibui.util.SettingsConstantsUI;
 import com.nextgis.woody.MainApplication;
 import com.nextgis.woody.R;
+import com.nextgis.woody.activity.MainActivity;
+import com.nextgis.woody.display.TreeRenderer;
 import com.nextgis.woody.overlay.SelectLocationOverlay;
 import com.nextgis.woody.util.Constants;
 import com.nextgis.woody.util.SettingsConstants;
@@ -70,7 +73,6 @@ public class MapFragment
     protected GeoPoint mCurrentCenter;
 
     protected float mTolerancePX;
-    private long mFeatureId;
 
     @Override
     public View onCreateView(
@@ -107,7 +109,6 @@ public class MapFragment
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        //outState.putLong(KEY_FEATURE, mFeatureId);
     }
 
     @Override
@@ -225,6 +226,9 @@ public class MapFragment
         mMap.setZoomAndCenter(zoom, center);
     }
 
+    public void setCenter(GeoPoint center) {
+        mMap.setZoomAndCenter(mMap.getZoomLevel(), center);
+    }
 
     @Override
     public void onLocationChanged(Location location) {
@@ -279,11 +283,20 @@ public class MapFragment
         if (null != layerTrees) {
             items = layerTrees.query(mapEnv);
             if (!items.isEmpty()) {
-                mFeatureId = items.get(0);
-                // TODO: showTreeFeatureFragment();
-
+                Feature treeFeature = layerTrees.getFeature(items.get(0));
+                TreeRenderer treeRenderer = (TreeRenderer)layerTrees.getRenderer();
+                treeRenderer.setSelectedFeature(treeFeature.getId());
+                MainActivity activity = (MainActivity)getActivity();
+                activity.showTreeDetails(treeFeature);
             }
         }
+    }
+
+    public void unselectGeometry() {
+        VectorLayer layerTrees = (VectorLayer) mApp.getMap().getLayerByName(Constants.KEY_MAIN);
+        TreeRenderer treeRenderer = (TreeRenderer)layerTrees.getRenderer();
+        treeRenderer.setSelectedFeature(-1);
+
     }
 
     @Override

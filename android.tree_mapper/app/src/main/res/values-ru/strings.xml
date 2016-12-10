@@ -36,4 +36,8 @@
     <string name="success_filled">Данные згружены</string>
     <string name="app_description">Приложение для картирования деревьев в городе. \nДизайн Александра Калашникова (Urbica design), разработка Дмитрия Барышникова (NextGIS). \nКонцепт приложения разработан на экохакатоне ENTER 2016, Прага.</string>
     <string name="action_about">О программе</string>
+    <string name="state">Status</string>
+    <string name="girth">Tree girth</string>
+    <string name="age">Age</string>
+    <string name="height">Height</string>
 </resources>

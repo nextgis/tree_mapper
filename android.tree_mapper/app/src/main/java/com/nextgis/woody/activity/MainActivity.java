@@ -14,10 +14,13 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.nextgis.maplib.api.ILayer;
 import com.nextgis.maplib.api.ILayerView;
+import com.nextgis.maplib.datasource.Feature;
+import com.nextgis.maplib.datasource.GeoPoint;
 import com.nextgis.maplib.datasource.ngw.Connection;
 import com.nextgis.maplib.datasource.ngw.INGWResource;
 import com.nextgis.maplib.datasource.ngw.Resource;
@@ -36,6 +39,7 @@ import com.nextgis.woody.R;
 import com.nextgis.woody.display.TreeRenderer;
 import com.nextgis.woody.fragment.LoginFragment;
 import com.nextgis.woody.fragment.MapFragment;
+import com.nextgis.woody.fragment.TreeDetailsFragment;
 import com.nextgis.woody.util.Constants;
 import com.nextgis.woody.util.SettingsConstants;
 
@@ -56,7 +60,12 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
 
     @Override
     public void onClick(View v) {
-
+        switch (v.getId()) {
+            case R.id.add_tree:
+                Toast.makeText(this, R.string.not_implemented, Toast.LENGTH_SHORT).show();
+                // Show add tree master
+                break;
+        }
     }
 
     @Override
@@ -332,15 +341,26 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
         setToolbar(R.id.main_toolbar);
         setTitle(getText(R.string.app_name));
 
+        findViewById(R.id.add_tree).setOnClickListener(this);
+
         FragmentManager fm = getSupportFragmentManager();
         MapFragment mapFragment = (MapFragment) fm.findFragmentByTag(Constants.FRAGMENT_MAP);
 
         if (mapFragment == null)
             mapFragment = new MapFragment();
 
+        TreeDetailsFragment treeDetailsFragment = (TreeDetailsFragment)
+                fm.findFragmentByTag(Constants.FRAGMENT_TREE_DETAILS);
+
+        if (treeDetailsFragment == null)
+            treeDetailsFragment = new TreeDetailsFragment();
+
         FragmentTransaction ft = fm.beginTransaction();
         ft.replace(R.id.map_frame, mapFragment, Constants.FRAGMENT_MAP);
+        ft.replace(R.id.tree_details, treeDetailsFragment, Constants.FRAGMENT_TREE_DETAILS);
         ft.commit();
+
+        hideTreeDetails();
     }
 
     @Override
@@ -359,5 +379,34 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void showTreeDetails(Feature treeFeature) {
+        FrameLayout fl = (FrameLayout) findViewById(R.id.tree_details);
+        if (fl.getVisibility() == View.GONE) {
+            // hide fab
+            findViewById(R.id.add_tree).setVisibility(View.GONE);
+            // show details fragment
+            fl.setVisibility(View.VISIBLE);
+            // fill fragment with data
+        }
+
+        FragmentManager fm = getSupportFragmentManager();
+
+        TreeDetailsFragment treeDetailsFragment = (TreeDetailsFragment) fm.findFragmentByTag(Constants.FRAGMENT_TREE_DETAILS);
+        treeDetailsFragment.fill(treeFeature);
+
+        MapFragment mapFragment = (MapFragment) fm.findFragmentByTag(Constants.FRAGMENT_MAP);
+        GeoPoint pt = (GeoPoint) treeFeature.getGeometry();
+        mapFragment.setCenter(pt);
+    }
+
+    public void hideTreeDetails() {
+        FragmentManager fm = getSupportFragmentManager();
+        MapFragment mapFragment = (MapFragment) fm.findFragmentByTag(Constants.FRAGMENT_MAP);
+        if(mapFragment != null)
+            mapFragment.unselectGeometry();
+        findViewById(R.id.add_tree).setVisibility(View.VISIBLE);
+        findViewById(R.id.tree_details).setVisibility(View.GONE);
     }
 }
