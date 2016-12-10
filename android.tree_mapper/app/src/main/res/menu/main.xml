@@ -19,19 +19,14 @@
   ~ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:orientation="vertical"
-              tools:context=".activity.MainActivity">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto"
+      xmlns:tools="http://schemas.android.com/tools"
+      tools:context=".MainActivity">
 
-    <include
-        layout="@layout/actionbar"/>
-
-    <FrameLayout
-        android:id="@+id/login_frame"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:layout="@layout/fragment_login"/>
-</LinearLayout>
+    <item
+        android:id="@+id/action_about"
+        android:orderInCategory="100"
+        android:title="@string/action_about"
+        app:showAsAction="never"/>
+</menu>

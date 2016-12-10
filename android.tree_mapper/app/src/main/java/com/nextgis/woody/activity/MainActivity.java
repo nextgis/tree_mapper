@@ -3,6 +3,7 @@ package com.nextgis.woody.activity;
 import android.accounts.Account;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.support.v4.app.FragmentManager;
@@ -10,6 +11,8 @@ import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
@@ -338,5 +341,23 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
         FragmentTransaction ft = fm.beginTransaction();
         ft.replace(R.id.map_frame, mapFragment, Constants.FRAGMENT_MAP);
         ft.commit();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_about:
+                Intent intentAbout = new Intent(this, AboutActivity.class);
+                startActivity(intentAbout);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

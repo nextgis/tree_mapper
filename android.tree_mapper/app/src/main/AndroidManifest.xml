@@ -61,6 +61,10 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".activity.AboutActivity"
+            android:label="@string/action_about"/>
+
         <service
             android:name=".service.WSyncService"
             android:exported="true"

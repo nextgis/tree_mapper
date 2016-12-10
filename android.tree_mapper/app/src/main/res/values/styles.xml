@@ -8,7 +8,7 @@
         <item name="ThemeOverlay.NextGIS.Toolbar">@style/Theme.Woody.ActionBarTheme</item>
     </style>
 
-    <style name="Theme.Woody.ActionBarTheme" parent="Theme.NextGIS.AppCompat.ActionBar">
+    <style name="Theme.Woody.ActionBarTheme" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
         <item name="android:textColorPrimary">@color/textColorPrimary.Light</item>
         <item name="titleTextColor">@color/textColorPrimary.Light</item>
         <item name="subtitleTextColor">@color/textColorSecondary.Light</item>

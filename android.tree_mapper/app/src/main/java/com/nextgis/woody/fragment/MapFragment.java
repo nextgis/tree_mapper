@@ -49,6 +49,7 @@ import com.nextgis.maplibui.util.ConstantsUI;
 import com.nextgis.maplibui.util.SettingsConstantsUI;
 import com.nextgis.woody.MainApplication;
 import com.nextgis.woody.R;
+import com.nextgis.woody.overlay.SelectLocationOverlay;
 import com.nextgis.woody.util.Constants;
 import com.nextgis.woody.util.SettingsConstants;
 
@@ -63,6 +64,8 @@ public class MapFragment
     protected RelativeLayout mMapRelativeLayout;
     protected GpsEventSource mGpsEventSource;
     protected CurrentLocationOverlay mCurrentLocationOverlay;
+    protected SelectLocationOverlay mSelectLocationOverlay;
+    protected boolean mShowSelectLocation;
 
     protected GeoPoint mCurrentCenter;
 
@@ -88,6 +91,10 @@ public class MapFragment
         mCurrentLocationOverlay = new CurrentLocationOverlay(getActivity(), mMap);
         mCurrentLocationOverlay.setStandingMarker(R.drawable.ic_location_standing);
         mCurrentLocationOverlay.setMovingMarker(R.drawable.ic_location_moving);
+        mSelectLocationOverlay = new SelectLocationOverlay(getActivity(), mMap);
+        mSelectLocationOverlay.setVisibility(mShowSelectLocation);
+
+        mMap.addOverlay(mSelectLocationOverlay);
         mMap.addOverlay(mCurrentLocationOverlay);
 
         //search relative view of map, if not found - add it
@@ -335,6 +342,13 @@ public class MapFragment
         } else {
             Toast.makeText(getActivity(), R.string.error_no_location, Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public void setSelectedLocationVisible(boolean isVisible) {
+        mShowSelectLocation = isVisible;
+
+        if (mSelectLocationOverlay != null)
+            mSelectLocationOverlay.setVisibility(isVisible);
     }
 
 }

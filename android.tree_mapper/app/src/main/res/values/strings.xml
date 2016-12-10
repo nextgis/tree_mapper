@@ -12,4 +12,8 @@
     <string name="create_base_map">Create base map</string>
     <string name="error_city_found">City not found</string>
     <string name="success_filled">Data loaded</string>
+    <string name="version" translatable="false">v. %1$s (rev. %2$d)</string>
+    <string name="app_description">The tree mapping application for cities. \nDesign by Alexander Kalashnikov (Urbica design), developing by Dmitry Baryshnikov (NextGIS). \nApplication concept created via ecohackathone ENTER 2016, Prague.</string>
+    <string name="copyright" translatable="false"><![CDATA[Copyright © <a href=\\\"http://nextgis.com\\\">NextGIS</a>, 2016]]></string>
+    <string name="action_about">About</string>
 </resources>
