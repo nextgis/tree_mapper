@@ -35,6 +35,7 @@ public interface Constants {
     String FRAGMENT_MAP              = "NGWMap";
     String FRAGMENT_TREE_DETAILS     = "WTreeDetails";
     String FRAGMENT_ACCOUNT          = "woody_account";
+    String FEATURE_ID = "featureId";
 
     String PASSWORD_PATTERN = "^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$";
     String EMAIL_PATTERN = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"

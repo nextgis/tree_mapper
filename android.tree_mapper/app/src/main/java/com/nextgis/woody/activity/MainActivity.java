@@ -62,8 +62,9 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.add_tree:
-                Toast.makeText(this, R.string.not_implemented, Toast.LENGTH_SHORT).show();
-                // Show add tree master
+                Intent intent = new Intent(this, EditActivity.class);
+                intent.putExtra(Constants.FEATURE_ID, -1);
+                startActivity(intent);
                 break;
         }
     }

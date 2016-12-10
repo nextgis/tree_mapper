@@ -20,4 +20,12 @@
     <string name="girth">Tree girth</string>
     <string name="age">Age</string>
     <string name="height">Height</string>
+    <string name="next">Next</string>
+    <string name="point_on_map">Point on map</string>
+    <string name="species">Species</string>
+    <string name="status">Status</string>
+    <string name="year">Planting year</string>
+    <string name="photo">Photo</string>
+    <string name="back">Back</string>
+    <string name="finish">Finish</string>
 </resources>

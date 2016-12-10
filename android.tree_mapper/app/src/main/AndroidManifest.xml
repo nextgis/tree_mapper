@@ -65,6 +65,9 @@
             android:name=".activity.AboutActivity"
             android:label="@string/action_about"/>
 
+        <activity
+            android:name=".activity.EditActivity"/>
+
         <service
             android:name=".service.WSyncService"
             android:exported="true"
