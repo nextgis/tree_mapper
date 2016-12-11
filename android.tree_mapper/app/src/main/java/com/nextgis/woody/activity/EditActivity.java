@@ -42,7 +42,9 @@ import com.nextgis.maplib.map.MapBase;
 import com.nextgis.maplib.map.NGWLookupTable;
 import com.nextgis.maplib.map.NGWVectorLayer;
 import com.nextgis.maplib.map.VectorLayer;
+import com.nextgis.maplib.util.AccountUtil;
 import com.nextgis.maplib.util.MapUtil;
+import com.nextgis.maplib.util.NGException;
 import com.nextgis.maplibui.activity.NGActivity;
 import com.nextgis.maplibui.api.IFormControl;
 import com.nextgis.maplibui.control.PhotoGallery;
@@ -59,6 +61,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -67,6 +73,7 @@ import static com.nextgis.maplib.util.Constants.NOT_FOUND;
 import static com.nextgis.maplib.util.Constants.TAG;
 import static com.nextgis.maplib.util.GeoConstants.CRS_WEB_MERCATOR;
 import static com.nextgis.maplib.util.GeoConstants.CRS_WGS84;
+import static com.nextgis.woody.util.Constants.FIELD_PLANT_DT;
 import static com.nextgis.woody.util.Constants.WTAG;
 
 /**
@@ -165,7 +172,7 @@ public class EditActivity extends NGActivity implements View.OnClickListener {
         MapBase mapBase = MapBase.getInstance();
         NGWLookupTable table = (NGWLookupTable) mapBase.getLayerByName(Constants.KEY_LT_SPECIES);
         Map<String, String> data = table.getData();
-        lvFragment.fill(data.values(), (String) values.get(Constants.KEY_LT_SPECIES));
+        lvFragment.fill(data, (String) values.get(Constants.KEY_LT_SPECIES));
     }
 
     private void thirdStep() {
@@ -179,7 +186,7 @@ public class EditActivity extends NGActivity implements View.OnClickListener {
         MapBase mapBase = MapBase.getInstance();
         NGWLookupTable table = (NGWLookupTable) mapBase.getLayerByName(Constants.KEY_LT_STATE);
         Map<String, String> data = table.getData();
-        lvFragment.fill(data.values(), (String) values.get(Constants.KEY_LT_STATE));
+        lvFragment.fill(data, (String) values.get(Constants.KEY_LT_STATE));
     }
 
     private void fourthStep() {
@@ -193,7 +200,7 @@ public class EditActivity extends NGActivity implements View.OnClickListener {
         MapBase mapBase = MapBase.getInstance();
         NGWLookupTable table = (NGWLookupTable) mapBase.getLayerByName(Constants.KEY_LT_AGE);
         Map<String, String> data = table.getData();
-        lvFragment.fill(data.values(), (String) values.get(Constants.KEY_LT_AGE));
+        lvFragment.fill(data, (String) values.get(Constants.KEY_LT_AGE));
     }
 
     private void fifthStep() {
@@ -216,7 +223,7 @@ public class EditActivity extends NGActivity implements View.OnClickListener {
         MapBase mapBase = MapBase.getInstance();
         NGWLookupTable table = (NGWLookupTable) mapBase.getLayerByName(Constants.KEY_LT_YEAR);
         Map<String, String> data = table.getData();
-        lvFragment.fill(data.values(), (String) values.get(Constants.KEY_LT_YEAR));
+        lvFragment.fill(data, (String) values.get(Constants.KEY_LT_YEAR));
     }
 
     private void sixthStep() {
@@ -262,7 +269,11 @@ public class EditActivity extends NGActivity implements View.OnClickListener {
                 sixthStep();
                 break;
             case 6:
-                save();
+                try {
+                    save();
+                } catch (NGException e) {
+                    e.printStackTrace();
+                }
                 break;
         }
     }
@@ -306,9 +317,21 @@ public class EditActivity extends NGActivity implements View.OnClickListener {
         }
     }
 
-    private void save() {
+    private void save() throws NGException {
 
-        // create or change feature
+        // Add constant values
+        values.put(Constants.FIELD_DATETIME, Calendar.getInstance().getTimeInMillis());
+
+        AccountUtil.AccountData accountData;
+        try {
+            accountData = AccountUtil.getAccountData(this, Constants.ACCOUNT_NAME);
+            values.put(Constants.FIELD_REPORTER, accountData.login);
+        }
+        catch (IllegalStateException e) {
+            throw new NGException(getString(com.nextgis.maplib.R.string.error_auth));
+        }
+
+        // Create or change feature
         IGISApplication app = (IGISApplication) getApplication();
 
         if (null == app) {
@@ -359,7 +382,22 @@ public class EditActivity extends NGActivity implements View.OnClickListener {
         FragmentManager fm = getSupportFragmentManager();
         ListViewFragment lvFragment = (ListViewFragment) fm.findFragmentByTag(Constants.FRAGMENT_LISTVIEW);
 
-        values.put(key, lvFragment.getSelection());
+        if(key.equals(Constants.KEY_LT_YEAR)) {
+            // Parse string d.M.yyyy to date nd time
+            SimpleDateFormat dateFormat = new SimpleDateFormat("d.M.yyyy");
+            Date convertedDate;
+            try {
+                String sDate = lvFragment.getSelection();
+                convertedDate = dateFormat.parse(sDate);
+                values.put(Constants.FIELD_PLANT_DT, convertedDate.getTime());
+            } catch (ParseException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+        else {
+            values.put(key, lvFragment.getSelection());
+        }
     }
 
     private void putAttaches() {

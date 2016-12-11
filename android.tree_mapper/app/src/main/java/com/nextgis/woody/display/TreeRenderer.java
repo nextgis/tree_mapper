@@ -60,7 +60,6 @@ public class TreeRenderer extends SimpleFeatureRenderer {
         String status = (String) feature.getFieldValue(Constants.KEY_LT_STATE);
         int color, outColor;
         if(featureId == selectedFeature) {
-
             color = Color.parseColor("#ff039be5");
             outColor = Color.parseColor("#32000000");
         }
@@ -73,12 +72,12 @@ public class TreeRenderer extends SimpleFeatureRenderer {
             outColor = Color.parseColor("#32f0d773");
         }
         else if(status.equals("Сильно ослабленное")) {
-            color = Color.parseColor("#fff0d773");
-            outColor = Color.parseColor("#32f0d773");
+            color = Color.parseColor("#fff7bc66");
+            outColor = Color.parseColor("#32f7bc66");
         }
         else if(status.equals("Отмирающее")) {
-            color = Color.parseColor("#fff0d773");
-            outColor = Color.parseColor("#32f0d773");
+            color = Color.parseColor("#fff76f56");
+            outColor = Color.parseColor("#32f76f56");
         }
         else if(status.equals("Сухостой")) {
             color = Color.parseColor("#ff9b9b9b");

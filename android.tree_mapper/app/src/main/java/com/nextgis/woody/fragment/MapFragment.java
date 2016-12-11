@@ -297,9 +297,17 @@ public class MapFragment
         if (null != layerTrees) {
             items = layerTrees.query(mapEnv);
             if (!items.isEmpty()) {
-                Feature treeFeature = layerTrees.getFeature(items.get(0));
+                Feature treeFeature = null;
+                for(long featureId : items) {
+                    treeFeature = layerTrees.getFeature(featureId);
+                    if(null != treeFeature)
+                        break;
+                }
+                if(treeFeature == null)
+                    return;
                 TreeRenderer treeRenderer = (TreeRenderer)layerTrees.getRenderer();
-                treeRenderer.setSelectedFeature(treeFeature.getId());
+                if(treeRenderer != null)
+                    treeRenderer.setSelectedFeature(treeFeature.getId());
                 MainActivity activity = (MainActivity)getActivity();
                 activity.showTreeDetails(treeFeature);
             }

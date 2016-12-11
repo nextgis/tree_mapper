@@ -33,6 +33,7 @@ import com.nextgis.woody.R;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * Created by bishop on 11.12.16.
@@ -42,6 +43,7 @@ public class ListViewFragment extends Fragment {
 
     private ListView listView;
     private ArrayList<String> listContent;
+    private Map<String, String> ltData;
     private int selection;
 
     @Override
@@ -58,8 +60,9 @@ public class ListViewFragment extends Fragment {
         return view;
     }
 
-    public void fill(Collection<String> data, String selection) {
-        listContent = new ArrayList<>(data);
+    public void fill(Map<String, String> data, String selection) {
+        listContent = new ArrayList<>(data.values());
+        ltData = data;
         this.selection = listContent.indexOf(selection);
         if(this.selection < 0 || this.selection > listContent.size())
             this.selection = 0;
@@ -88,6 +91,7 @@ public class ListViewFragment extends Fragment {
 
     public String getSelection() {
         int pos = listView.getCheckedItemPosition();
-        return listContent.get(pos);
+        Object[] list = ltData.keySet().toArray();
+        return (String) list[pos];
     }
 }
