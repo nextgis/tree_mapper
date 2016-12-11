@@ -47,6 +47,8 @@ import org.json.JSONException;
 
 import java.io.IOException;
 
+import static com.nextgis.maplib.util.Constants.NOT_FOUND;
+
 public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAccountListener, View.OnClickListener {
 
 
@@ -62,7 +64,7 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.add_tree:
-                editTree(-1);
+                editTree(NOT_FOUND);
                 break;
         }
     }

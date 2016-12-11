@@ -36,6 +36,7 @@ public interface Constants {
     String FRAGMENT_TREE_DETAILS     = "WTreeDetails";
     String FRAGMENT_ACCOUNT          = "woody_account";
     String FRAGMENT_LISTVIEW = "WListView";
+    String FRAGMENT_PHOTO = "WPhoto";
     String FEATURE_ID = "featureId";
 
     String PASSWORD_PATTERN = "^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$";

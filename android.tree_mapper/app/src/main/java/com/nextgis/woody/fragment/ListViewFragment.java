@@ -42,6 +42,7 @@ public class ListViewFragment extends Fragment {
 
     private ListView listView;
     private ArrayList<String> listContent;
+    private int selection;
 
     @Override
     public View onCreateView(
@@ -57,16 +58,19 @@ public class ListViewFragment extends Fragment {
         return view;
     }
 
-    public void fill(Collection<String> data) {
+    public void fill(Collection<String> data, String selection) {
         listContent = new ArrayList<>(data);
+        this.selection = listContent.indexOf(selection);
+        if(this.selection < 0 || this.selection > listContent.size())
+            this.selection = 0;
         setAdapter();
     }
 
     private void setAdapter() {
         if(listView != null) {
             ArrayAdapter<String> adapter;
-            int currentapiVersion = android.os.Build.VERSION.SDK_INT;
-            if (currentapiVersion >= android.os.Build.VERSION_CODES.HONEYCOMB){
+            int currentApiVersion = android.os.Build.VERSION.SDK_INT;
+            if (currentApiVersion >= android.os.Build.VERSION_CODES.HONEYCOMB){
                 adapter = new ArrayAdapter<>(getContext(),
                         android.R.layout.simple_list_item_activated_1, listContent );
             }
@@ -77,8 +81,13 @@ public class ListViewFragment extends Fragment {
 
             listView.setAdapter(adapter);
 
-            listView.setItemChecked(0, true);
+            listView.setItemChecked(selection, true);
             adapter.notifyDataSetChanged();
         }
+    }
+
+    public String getSelection() {
+        int pos = listView.getCheckedItemPosition();
+        return listContent.get(pos);
     }
 }
