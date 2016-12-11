@@ -77,6 +77,9 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
 
         Intent intent = new Intent(this, EditActivity.class);
         intent.putExtra(Constants.FEATURE_ID, i);
+        GeoPoint pt = mapFragment.getCenter();
+        intent.putExtra(SettingsConstants.KEY_PREF_SCROLL_X, pt.getX());
+        intent.putExtra(SettingsConstants.KEY_PREF_SCROLL_Y, pt.getY());
         startActivity(intent);
     }
 
@@ -233,7 +236,7 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
                 layer.setName(SettingsConstants.BASEMAP_NAME);
                 layer.setURL(SettingsConstants.BASEMAP_URL);
                 layer.setTMSType(GeoConstants.TMSTYPE_OSM);
-                layer.setMaxZoom(GeoConstants.DEFAULT_MAX_ZOOM);
+                layer.setMaxZoom(20);
                 layer.setMinZoom(GeoConstants.DEFAULT_MIN_ZOOM);
                 layer.setVisible(true);
                 layer.setCacheSizeMultiply(2);

@@ -40,6 +40,7 @@ import com.nextgis.maplib.datasource.Feature;
 import com.nextgis.maplib.datasource.GeoEnvelope;
 import com.nextgis.maplib.datasource.GeoPoint;
 import com.nextgis.maplib.location.GpsEventSource;
+import com.nextgis.maplib.map.MapBase;
 import com.nextgis.maplib.map.MapDrawable;
 import com.nextgis.maplib.map.VectorLayer;
 import com.nextgis.maplib.util.GeoConstants;
@@ -58,6 +59,9 @@ import com.nextgis.woody.util.SettingsConstants;
 
 import java.util.List;
 
+import static com.nextgis.maplib.util.GeoConstants.CRS_WEB_MERCATOR;
+import static com.nextgis.maplib.util.GeoConstants.CRS_WGS84;
+
 public class MapFragment
         extends Fragment
         implements MapViewEventListener, GpsEventListener {
@@ -73,6 +77,9 @@ public class MapFragment
     protected GeoPoint mCurrentCenter;
 
     protected float mTolerancePX;
+
+    private int initZoom;
+    private GeoPoint initCenter;
 
     @Override
     public View onCreateView(
@@ -90,6 +97,9 @@ public class MapFragment
         mMap.setId(R.id.map_view);
 
         mGpsEventSource = mApp.getGpsEventSource();
+        if(mShowSelectLocation)
+            mMap.setZoomAndCenter(initZoom, initCenter);
+
         mCurrentLocationOverlay = new CurrentLocationOverlay(getActivity(), mMap);
         mCurrentLocationOverlay.setStandingMarker(R.drawable.ic_location_standing);
         mCurrentLocationOverlay.setMovingMarker(R.drawable.ic_location_moving);
@@ -140,7 +150,7 @@ public class MapFragment
 
         final SharedPreferences.Editor edit =
                 PreferenceManager.getDefaultSharedPreferences(getActivity()).edit();
-        if (null != mMap) {
+        if (null != mMap && !mShowSelectLocation) {
             edit.putFloat(SettingsConstants.KEY_PREF_ZOOM_LEVEL, mMap.getZoomLevel());
             GeoPoint point = mMap.getMapCenter();
             edit.putLong(SettingsConstants.KEY_PREF_SCROLL_X, Double.doubleToRawLongBits(point.getX()));
@@ -162,7 +172,7 @@ public class MapFragment
         final SharedPreferences prefs =
                 PreferenceManager.getDefaultSharedPreferences(getActivity());
 
-        if (null != mMap) {
+        if (null != mMap && !mShowSelectLocation) {
             if(prefs.getBoolean(SettingsConstants.KEY_PREF_MAP_FIRST_VIEW, true)){
                 // Zoom to trees extent
                 MapDrawable md = mMap.getMap();
@@ -230,6 +240,10 @@ public class MapFragment
         mMap.setZoomAndCenter(mMap.getZoomLevel(), center);
     }
 
+    public GeoPoint getCenter() {
+        return mMap.getMapCenter();
+    }
+
     @Override
     public void onLocationChanged(Location location) {
         if (location != null) {
@@ -293,10 +307,12 @@ public class MapFragment
     }
 
     public void unselectGeometry() {
-        VectorLayer layerTrees = (VectorLayer) mApp.getMap().getLayerByName(Constants.KEY_MAIN);
-        TreeRenderer treeRenderer = (TreeRenderer)layerTrees.getRenderer();
-        treeRenderer.setSelectedFeature(-1);
-
+        MapBase mapBase = MapBase.getInstance();
+        if(null != mapBase) {
+            VectorLayer layerTrees = (VectorLayer) mapBase.getLayerByName(Constants.KEY_MAIN);
+            TreeRenderer treeRenderer = (TreeRenderer) layerTrees.getRenderer();
+            treeRenderer.setSelectedFeature(-1);
+        }
     }
 
     @Override
@@ -364,4 +380,17 @@ public class MapFragment
             mSelectLocationOverlay.setVisibility(isVisible);
     }
 
+    public void setZoomAndPosition(int i, GeoPoint pt) {
+        initZoom = i;
+        initCenter = pt;
+    }
+
+    public GeoPoint getSelectedPosition() {
+        Location location = mSelectLocationOverlay.getSelectedLocation();
+        GeoPoint pt = new GeoPoint(location.getLongitude(), location.getLatitude());
+        pt.setCRS(CRS_WGS84);
+        pt.project(CRS_WEB_MERCATOR);
+
+        return pt;
+    }
 }

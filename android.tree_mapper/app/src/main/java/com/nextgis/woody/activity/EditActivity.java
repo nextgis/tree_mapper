@@ -36,6 +36,8 @@ import android.widget.Toast;
 
 import com.nextgis.maplib.api.IGISApplication;
 import com.nextgis.maplib.datasource.Feature;
+import com.nextgis.maplib.datasource.GeoMultiPoint;
+import com.nextgis.maplib.datasource.GeoPoint;
 import com.nextgis.maplib.map.MapBase;
 import com.nextgis.maplib.map.NGWLookupTable;
 import com.nextgis.maplib.map.NGWVectorLayer;
@@ -49,6 +51,7 @@ import com.nextgis.woody.fragment.ListViewFragment;
 import com.nextgis.woody.fragment.MapFragment;
 import com.nextgis.woody.fragment.PhotoFragment;
 import com.nextgis.woody.util.Constants;
+import com.nextgis.woody.util.SettingsConstants;
 
 import org.json.JSONException;
 
@@ -59,8 +62,11 @@ import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
 
+import static com.nextgis.maplib.util.Constants.FIELD_GEOM;
 import static com.nextgis.maplib.util.Constants.NOT_FOUND;
 import static com.nextgis.maplib.util.Constants.TAG;
+import static com.nextgis.maplib.util.GeoConstants.CRS_WEB_MERCATOR;
+import static com.nextgis.maplib.util.GeoConstants.CRS_WGS84;
 import static com.nextgis.woody.util.Constants.WTAG;
 
 /**
@@ -73,6 +79,7 @@ public class EditActivity extends NGActivity implements View.OnClickListener {
     private char currentStep;
     private ContentValues values;
     private long mFeatureId;
+    private GeoPoint mapCenter;
 
     @Override
     public int getThemeId() {
@@ -95,6 +102,8 @@ public class EditActivity extends NGActivity implements View.OnClickListener {
 
         Intent intent = this.getIntent();
         mFeatureId = intent.getLongExtra(Constants.FEATURE_ID, NOT_FOUND);
+        mapCenter = new GeoPoint(intent.getDoubleExtra(SettingsConstants.KEY_PREF_SCROLL_X, 0),
+                intent.getDoubleExtra(SettingsConstants.KEY_PREF_SCROLL_Y, 0));
 
         if(NOT_FOUND != mFeatureId) {
             MapBase mapBase = MapBase.getInstance();
@@ -116,8 +125,20 @@ public class EditActivity extends NGActivity implements View.OnClickListener {
         FragmentManager fm = getSupportFragmentManager();
         MapFragment mapFragment = (MapFragment) fm.findFragmentByTag(Constants.FRAGMENT_MAP);
 
-        if (mapFragment == null)
+        if (mapFragment == null) {
             mapFragment = new MapFragment();
+            mapFragment.setSelectedLocationVisible(true);
+
+            MapBase mapBase = MapBase.getInstance();
+            NGWVectorLayer vectorLayer = (NGWVectorLayer) mapBase.getLayerByName(Constants.KEY_MAIN);
+            Feature feature = vectorLayer.getFeature(mFeatureId);
+            if(null != feature) {
+                mapFragment.setZoomAndPosition(18, (GeoPoint) feature.getGeometry());
+            }
+            else {
+                mapFragment.setZoomAndPosition(18, mapCenter);
+            }
+        }
 
         FragmentTransaction ft = fm.beginTransaction();
         ft.replace(R.id.central_frame, mapFragment, Constants.FRAGMENT_MAP);
@@ -324,7 +345,14 @@ public class EditActivity extends NGActivity implements View.OnClickListener {
     }
 
     private void saveCoordinates() {
-
+        FragmentManager fm = getSupportFragmentManager();
+        MapFragment mapFragment = (MapFragment) fm.findFragmentByTag(Constants.FRAGMENT_MAP);
+        GeoPoint pt = mapFragment.getSelectedPosition();
+        try {
+            values.put(FIELD_GEOM, pt.toBlob());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void saveLookUpValue(String key) {

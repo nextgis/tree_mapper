@@ -71,8 +71,7 @@ public class MainApplication extends GISApplication {
         mMap = new MapDrawable(bkBitmap, this, mapFullPath, new LayerFactoryUI());
         mMap.setName(mapName);
         mMap.load();
-        mMap.setMaxZoom(19);
-        //MapUtil.setMessageRenderer(mMap, this);
+        mMap.setMaxZoom(20);
 
         return mMap;
     }
