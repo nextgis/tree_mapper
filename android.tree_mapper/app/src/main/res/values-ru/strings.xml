@@ -40,12 +40,12 @@
     <string name="girth">Обхват ствола</string>
     <string name="age">Возраст</string>
     <string name="height">Высота</string>
-    <string name="next">Next</string>
-    <string name="point_on_map">Point on map</string>
-    <string name="species">Species</string>
-    <string name="status">Status</string>
-    <string name="year">Planting year</string>
-    <string name="photo">Photo</string>
-    <string name="back">Back</string>
-    <string name="finish">Finish</string>
+    <string name="next">Далее</string>
+    <string name="point_on_map">Точка на карте</string>
+    <string name="species">Порода</string>
+    <string name="status">Жизненное состояние</string>
+    <string name="year">Год посадки</string>
+    <string name="photo">Фотография</string>
+    <string name="back">Назад</string>
+    <string name="finish">Готово</string>
 </resources>

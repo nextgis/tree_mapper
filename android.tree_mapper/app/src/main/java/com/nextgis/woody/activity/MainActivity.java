@@ -62,11 +62,20 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.add_tree:
-                Intent intent = new Intent(this, EditActivity.class);
-                intent.putExtra(Constants.FEATURE_ID, -1);
-                startActivity(intent);
+                editTree(-1);
                 break;
         }
+    }
+
+    public void editTree(long i) {
+        FragmentManager fm = getSupportFragmentManager();
+        MapFragment mapFragment = (MapFragment) fm.findFragmentByTag(Constants.FRAGMENT_MAP);
+        if(mapFragment != null)
+            mapFragment.unselectGeometry();
+
+        Intent intent = new Intent(this, EditActivity.class);
+        intent.putExtra(Constants.FEATURE_ID, i);
+        startActivity(intent);
     }
 
     @Override
@@ -272,10 +281,11 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
                         NGWLookupTable ngwTable =
                                 new NGWLookupTable(getApplicationContext(), mMap.createLayerStorage(cityResource.getKey()));
 
-                        ngwTable.setName(cityResource.getName());
+                        ngwTable.setName(cityResource.getKey());
                         ngwTable.setRemoteId(cityResource.getRemoteId());
                         ngwTable.setAccountName(account.name);
                         ngwTable.setSyncType(com.nextgis.maplib.util.Constants.SYNC_DATA);
+                        mMap.addLayer(ngwTable);
 
                         try {
                             ngwTable.fillFromNGW(null);

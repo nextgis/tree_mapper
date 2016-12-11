@@ -142,7 +142,7 @@ public class TreeDetailsFragment extends Fragment implements View.OnClickListene
                 }
                 break;
             case R.id.edit_action:
-                // TODO: start edit activity
+                edit();
                 break;
             case R.id.close_action:
                 close();
@@ -153,5 +153,12 @@ public class TreeDetailsFragment extends Fragment implements View.OnClickListene
     private void close() {
         MainActivity activity = (MainActivity) getActivity();
         activity.hideTreeDetails();
+    }
+
+    private void edit() {
+        if(null == currentFeature)
+            return;
+        MainActivity activity = (MainActivity) getActivity();
+        activity.editTree(currentFeature.getId());
     }
 }
