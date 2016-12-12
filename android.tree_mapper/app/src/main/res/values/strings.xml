@@ -28,4 +28,6 @@
     <string name="photo">Photo</string>
     <string name="back">Back</string>
     <string name="finish">Finish</string>
+    <string name="message_important">Important</string>
+    <string name="message_need_permossions">To work properly the application need permissions to be set in system preferences</string>
 </resources>

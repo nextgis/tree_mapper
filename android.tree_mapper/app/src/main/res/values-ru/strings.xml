@@ -48,4 +48,6 @@
     <string name="photo">Фотография</string>
     <string name="back">Назад</string>
     <string name="finish">Готово</string>
+    <string name="message_important">Важно</string>
+    <string name="message_need_permossions">Для корректной работы необходимо дать разрешения приложению в настройкх системы</string>
 </resources>

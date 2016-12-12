@@ -3,12 +3,14 @@ package com.nextgis.woody.activity;
 import android.accounts.Account;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -142,6 +144,22 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
         setContentView(R.layout.activity_main_first);
         setToolbar(R.id.main_toolbar);
         setTitle(getText(R.string.first_run));
+
+        // Alert for Android 6 or higher
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle(R.string.message_important)
+                    .setMessage(R.string.message_need_permossions)
+                    .setCancelable(false)
+                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+            AlertDialog alert = builder.create();
+            alert.show();
+        }
 
         FragmentManager fm = getSupportFragmentManager();
         NGWLoginFragment ngwLoginFragment = (NGWLoginFragment) fm.findFragmentByTag(Constants.FRAGMENT_LOGIN);
