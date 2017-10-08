@@ -1,22 +1,46 @@
+/*
+ * Project:  Woody
+ * Purpose:  Mobile application for trees mapping.
+ * Author:   Dmitry Baryshnikov, dmitry.baryshnikov@nextgis.com
+ * Author:   Stanislav Petriakov, becomeglory@gmail.com
+ * *****************************************************************************
+ * Copyright (c) 2016-2017 NextGIS, info@nextgis.com
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package com.nextgis.woody.activity;
 
+import android.Manifest;
 import android.accounts.Account;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
-import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.nextgis.maplib.api.ILayer;
@@ -52,7 +76,7 @@ import java.io.IOException;
 import static com.nextgis.maplib.util.Constants.NOT_FOUND;
 
 public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAccountListener, View.OnClickListener {
-
+    protected final static int PERMISSIONS_REQUEST = 1;
 
     protected MapBase mMap;
     protected boolean mFirstRun = true;
@@ -67,6 +91,9 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
         switch (v.getId()) {
             case R.id.add_tree:
                 editTree(NOT_FOUND);
+                break;
+            case R.id.permissioons:
+                checkPermissions();
                 break;
         }
     }
@@ -117,8 +144,8 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
         mMap = app.getMap();
         final Account account = app.getAccount(Constants.ACCOUNT_NAME);
         // check if has safe forest account
-        if (account == null ) {
-            createAccountView();
+        if (account == null) {
+            createPermissionsView();
         } else {
             // check basic layers
             if (!hasBasicLayers(app.getMap())) {
@@ -140,39 +167,69 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
         setSupportActionBar(toolbar);
     }
 
-    protected void createAccountView() {
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case PERMISSIONS_REQUEST:
+                if (isGrantResultsOk(grantResults))
+                    createAccountView();
+                break;
+            default:
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+    }
+
+    private boolean isGrantResultsOk(int[] grantResults) {
+        if (grantResults.length == 4) {
+            for (int result : grantResults) {
+                if (result != PackageManager.PERMISSION_GRANTED)
+                    return false;
+            }
+
+            return true;
+        }
+        return false;
+    }
+
+    protected void createPermissionsView() {
         setContentView(R.layout.activity_main_first);
+        findViewById(R.id.permissioons).setOnClickListener(this);
         setToolbar(R.id.main_toolbar);
         setTitle(getText(R.string.first_run));
+        checkPermissions();
+    }
 
+    private void checkPermissions() {
         // Alert for Android 6 or higher
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle(R.string.message_important)
-                    .setMessage(R.string.message_need_permissions)
-                    .setCancelable(false)
-                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    });
-            AlertDialog alert = builder.create();
-            alert.show();
-        }
+        if (!hasPermissions()) {
+            String[] permissions = new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.GET_ACCOUNTS,
+                                                Manifest.permission.WRITE_EXTERNAL_STORAGE};
+            requestPermissions(R.string.message_important, R.string.message_need_permissions, PERMISSIONS_REQUEST, permissions);
+        } else
+            createAccountView();
+    }
 
+    protected void createAccountView() {
         FragmentManager fm = getSupportFragmentManager();
         NGWLoginFragment ngwLoginFragment = (NGWLoginFragment) fm.findFragmentByTag(Constants.FRAGMENT_LOGIN);
 
         if (ngwLoginFragment == null)
             ngwLoginFragment = new LoginFragment();
 
+        ((LinearLayout) findViewById(R.id.login_frame)).removeAllViews();
         FragmentTransaction ft = fm.beginTransaction();
         ft.replace(R.id.login_frame, ngwLoginFragment, Constants.FRAGMENT_LOGIN);
-        ft.commit();
+        ft.commitAllowingStateLoss();
         ngwLoginFragment.setForNewAccount(true);
         ngwLoginFragment.setOnAddAccountListener(this);
         ngwLoginFragment.setUrlText(SettingsConstants.SITE_URL);
+    }
+
+    protected boolean hasPermissions() {
+        return isPermissionGranted(Manifest.permission.ACCESS_FINE_LOCATION) &&
+                isPermissionGranted(Manifest.permission.ACCESS_COARSE_LOCATION) &&
+                isPermissionGranted(Manifest.permission.GET_ACCOUNTS) &&
+                isPermissionGranted(Manifest.permission.WRITE_EXTERNAL_STORAGE);
     }
 
     protected void createFirstRunView() {
@@ -361,7 +418,6 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
     }
 
     protected void createNormalView() {
-
         ILayer layer = mMap.getLayerByName(Constants.KEY_MAIN);
         if(null == layer)
             return;
