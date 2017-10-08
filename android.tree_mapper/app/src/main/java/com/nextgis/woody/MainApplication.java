@@ -36,6 +36,7 @@ import com.nextgis.maplibui.util.SettingsConstantsUI;
 
 import com.nextgis.woody.activity.WPreferencesActivity;
 
+import static com.nextgis.maplib.util.Constants.NGW_ACCOUNT_TYPE;
 import static com.nextgis.maplib.util.SettingsConstants.KEY_PREF_MAP;
 import static com.nextgis.maplib.util.Constants.MAP_EXT;
 
@@ -94,6 +95,21 @@ public class MainApplication extends GISApplication {
         Intent intentSet = new Intent(this, WPreferencesActivity.class);
         intentSet.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intentSet);
+    }
+
+    @Override
+    public void sendEvent(String category, String action, String label) {
+
+    }
+
+    @Override
+    public void sendScreen(String name) {
+
+    }
+
+    @Override
+    public String getAccountsType() {
+        return NGW_ACCOUNT_TYPE;
     }
 
 }

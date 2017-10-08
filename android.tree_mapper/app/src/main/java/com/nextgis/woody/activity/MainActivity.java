@@ -149,7 +149,7 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle(R.string.message_important)
-                    .setMessage(R.string.message_need_permossions)
+                    .setMessage(R.string.message_need_permissions)
                     .setCancelable(false)
                     .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                         @Override

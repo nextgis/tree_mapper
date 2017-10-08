@@ -89,7 +89,7 @@ public class TreeRenderer extends SimpleFeatureRenderer {
         }
         SimpleMarkerStyle style = (SimpleMarkerStyle) mStyle;
         style.setColor(color);
-        style.setOutlineColor(outColor);
+        style.setOutColor(outColor);
         return style;
     }
 }
