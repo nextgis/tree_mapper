@@ -2,8 +2,9 @@
  *  Project:  Woody
  *  Purpose:  Mobile application for trees mapping.
  *  Author:   Dmitry Baryshnikov, dmitry.baryshnikov@nextgis.com
+ *  Author:   Stanislav Petriakov, becomeglory@gmail.com
  *  *****************************************************************************
- *  Copyright (c) 2016 NextGIS, info@nextgis.com
+ *  Copyright (c) 2016-2017 NextGIS, info@nextgis.com
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -35,6 +36,8 @@ import com.nextgis.maplibui.mapui.LayerFactoryUI;
 import com.nextgis.maplibui.util.SettingsConstantsUI;
 
 import com.nextgis.woody.activity.WPreferencesActivity;
+import com.nextgis.woody.util.Constants;
+import com.vk.sdk.VKSdk;
 
 import static com.nextgis.maplib.util.Constants.NGW_ACCOUNT_TYPE;
 import static com.nextgis.maplib.util.SettingsConstants.KEY_PREF_MAP;
@@ -47,6 +50,12 @@ import java.io.File;
  */
 
 public class MainApplication extends GISApplication {
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        if (getAccount(Constants.ACCOUNT_NAME) == null)
+            VKSdk.initialize(this);
+    }
 
     @Override
     public MapBase getMap()

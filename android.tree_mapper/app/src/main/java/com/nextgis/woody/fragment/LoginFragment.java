@@ -2,8 +2,9 @@
  *  Project:  Woody
  *  Purpose:  Mobile application for trees mapping.
  *  Author:   Dmitry Baryshnikov, dmitry.baryshnikov@nextgis.com
+ *  Author:   Stanislav Petriakov, becomeglory@gmail.com
  *  *****************************************************************************
- *  Copyright (c) 2016 NextGIS, info@nextgis.com
+ *  Copyright (c) 2016-2017 NextGIS, info@nextgis.com
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -44,6 +45,7 @@ import com.nextgis.maplibui.service.HTTPLoader;
 import com.nextgis.woody.R;
 import com.nextgis.woody.util.Constants;
 import com.nextgis.woody.util.UiUtil;
+import com.vk.sdk.VKSdk;
 
 import java.util.regex.Pattern;
 
@@ -66,6 +68,7 @@ public class LoginFragment extends NGWLoginFragment {
         mLogin = (EditText) view.findViewById(R.id.login);
         mPassword = (EditText) view.findViewById(R.id.password);
         mSignInButton = (Button) view.findViewById(R.id.signup);
+        view.findViewById(R.id.vk).setOnClickListener(this);
 
         mLogin.addTextChangedListener(new EmailWatcher());
         mPassword.addTextChangedListener(new PasswordWatcher());
@@ -95,6 +98,17 @@ public class LoginFragment extends NGWLoginFragment {
     @Override
     public void onClick(View v)
     {
+        switch (v.getId()) {
+            case R.id.vk:
+                VKSdk.login(getActivity(), "email");
+                break;
+            default:
+                signup();
+                break;
+        }
+    }
+
+    private void signup() {
         if (!UiUtil.isEmailValid(mLogin.getText().toString())) {
             Toast.makeText(getActivity(), R.string.email_not_valid, Toast.LENGTH_SHORT).show();
             return;

@@ -68,6 +68,15 @@ import com.nextgis.woody.fragment.MapFragment;
 import com.nextgis.woody.fragment.TreeDetailsFragment;
 import com.nextgis.woody.util.Constants;
 import com.nextgis.woody.util.SettingsConstants;
+import com.vk.sdk.VKAccessToken;
+import com.vk.sdk.VKCallback;
+import com.vk.sdk.VKSdk;
+import com.vk.sdk.api.VKApi;
+import com.vk.sdk.api.VKError;
+import com.vk.sdk.api.VKRequest;
+import com.vk.sdk.api.VKResponse;
+import com.vk.sdk.api.model.VKApiUser;
+import com.vk.sdk.api.model.VKList;
 
 import org.json.JSONException;
 
@@ -77,6 +86,7 @@ import static com.nextgis.maplib.util.Constants.NOT_FOUND;
 
 public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAccountListener, View.OnClickListener {
     protected final static int PERMISSIONS_REQUEST = 1;
+    private static final int VK_SIGN_IN = 10485;
 
     protected MapBase mMap;
     protected boolean mFirstRun = true;
@@ -106,9 +116,11 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
 
         Intent intent = new Intent(this, EditActivity.class);
         intent.putExtra(Constants.FEATURE_ID, i);
-        GeoPoint pt = mapFragment.getCenter();
-        intent.putExtra(SettingsConstants.KEY_PREF_SCROLL_X, pt.getX());
-        intent.putExtra(SettingsConstants.KEY_PREF_SCROLL_Y, pt.getY());
+        if (mapFragment != null) {
+            GeoPoint pt = mapFragment.getCenter();
+            intent.putExtra(SettingsConstants.KEY_PREF_SCROLL_X, pt.getX());
+            intent.putExtra(SettingsConstants.KEY_PREF_SCROLL_Y, pt.getY());
+        }
         startActivity(intent);
     }
 
@@ -223,6 +235,42 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
         ngwLoginFragment.setForNewAccount(true);
         ngwLoginFragment.setOnAddAccountListener(this);
         ngwLoginFragment.setUrlText(SettingsConstants.SITE_URL);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch (requestCode) {
+            case VK_SIGN_IN:
+                handleVKResult(requestCode, resultCode, data);
+                break;
+        }
+    }
+
+    private void handleVKResult(int requestCode, int resultCode, Intent data) {
+        VKSdk.onActivityResult(requestCode, resultCode, data, new VKCallback<VKAccessToken>() {
+            @Override
+            public void onResult(VKAccessToken res) {
+                getVKUserData(res.email);
+            }
+
+            @Override
+            public void onError(VKError error) {
+
+            }
+        });
+    }
+
+    private void getVKUserData(String email) {
+        VKApi.users().get().executeWithListener(new VKRequest.VKRequestListener() {
+            @SuppressWarnings("unchecked")
+            @Override
+            public void onComplete(VKResponse response) {
+                VKApiUser user = ((VKList<VKApiUser>)response.parsedModel).get(0);
+                Log.d("User name", user.first_name + " " + user.last_name);
+            }
+        });
     }
 
     protected boolean hasPermissions() {
