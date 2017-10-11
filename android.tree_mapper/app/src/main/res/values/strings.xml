@@ -23,6 +23,8 @@
 
 <resources>
     <integer name="com_vk_sdk_AppId">6214371</integer>
+    <string name="facebook_app_id">120351575299754</string>
+    <string name="fb_login_protocol_scheme">fb120351575299754</string>
     <string name="app_name">Woody</string>
     <string name="email">Email</string>
     <string name="sign_up">Sign up</string>

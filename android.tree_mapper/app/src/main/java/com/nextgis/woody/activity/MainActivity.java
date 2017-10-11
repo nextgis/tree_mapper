@@ -43,6 +43,13 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.facebook.AccessToken;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.login.LoginResult;
 import com.nextgis.maplib.api.ILayer;
 import com.nextgis.maplib.api.ILayerView;
 import com.nextgis.maplib.datasource.Feature;
@@ -79,6 +86,7 @@ import com.vk.sdk.api.model.VKApiUser;
 import com.vk.sdk.api.model.VKList;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 
@@ -87,6 +95,7 @@ import static com.nextgis.maplib.util.Constants.NOT_FOUND;
 public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAccountListener, View.OnClickListener {
     protected final static int PERMISSIONS_REQUEST = 1;
     private static final int VK_SIGN_IN = 10485;
+    private static final int FB_SIGN_IN = 64206;
 
     protected MapBase mMap;
     protected boolean mFirstRun = true;
@@ -223,11 +232,29 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
 
     protected void createAccountView() {
         FragmentManager fm = getSupportFragmentManager();
-        NGWLoginFragment ngwLoginFragment = (NGWLoginFragment) fm.findFragmentByTag(Constants.FRAGMENT_LOGIN);
+        LoginFragment ngwLoginFragment = (LoginFragment) fm.findFragmentByTag(Constants.FRAGMENT_LOGIN);
 
         if (ngwLoginFragment == null)
             ngwLoginFragment = new LoginFragment();
 
+        FacebookCallback<LoginResult> callback = new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+                getFBUserData(loginResult);
+            }
+
+            @Override
+            public void onCancel() {
+                Toast.makeText(MainActivity.this, R.string.canceled, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onError(FacebookException exception) {
+                Toast.makeText(MainActivity.this, R.string.error_auth, Toast.LENGTH_SHORT).show();
+            }
+        };
+
+        ngwLoginFragment.setCallback(callback);
         ((LinearLayout) findViewById(R.id.login_frame)).removeAllViews();
         FragmentTransaction ft = fm.beginTransaction();
         ft.replace(R.id.login_frame, ngwLoginFragment, Constants.FRAGMENT_LOGIN);
@@ -245,6 +272,18 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
             case VK_SIGN_IN:
                 handleVKResult(requestCode, resultCode, data);
                 break;
+            case FB_SIGN_IN:
+                handleFBResult(requestCode, resultCode, data);
+                break;
+        }
+    }
+
+    private void handleFBResult(int requestCode, int resultCode, Intent data) {
+        FragmentManager fm = getSupportFragmentManager();
+        LoginFragment ngwLoginFragment = (LoginFragment) fm.findFragmentByTag(Constants.FRAGMENT_LOGIN);
+        if (ngwLoginFragment != null) {
+            CallbackManager callbackManager = ngwLoginFragment.getCallbackManager();
+            callbackManager.onActivityResult(requestCode, resultCode, data);
         }
     }
 
@@ -257,9 +296,28 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
 
             @Override
             public void onError(VKError error) {
+                int message = R.string.error_auth;
+                if (error.errorCode == VKError.VK_CANCELED)
+                    message = R.string.canceled;
 
+                Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void getFBUserData(LoginResult loginResult) {
+        AccessToken token = loginResult.getAccessToken();
+        GraphRequest request = GraphRequest.newMeRequest(token, new GraphRequest.GraphJSONObjectCallback() {
+            @Override
+            public void onCompleted(JSONObject user, GraphResponse response) {
+                String email = user.optString("email");
+                String name = user.optString("name");
+            }
+        });
+        Bundle parameters = new Bundle();
+        parameters.putString("fields", "email,name");
+        request.setParameters(parameters);
+        request.executeAsync();
     }
 
     private void getVKUserData(String email) {

@@ -39,6 +39,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookSdk;
+import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
 import com.nextgis.maplib.util.NGWUtil;
 import com.nextgis.maplibui.fragment.NGWLoginFragment;
 import com.nextgis.maplibui.service.HTTPLoader;
@@ -49,12 +55,11 @@ import com.vk.sdk.VKSdk;
 
 import java.util.regex.Pattern;
 
-/**
- * Created by bishop on 03.12.16.
- */
-
 public class LoginFragment extends NGWLoginFragment {
     protected ProgressDialog mProgressDialog;
+    private CallbackManager mCallbackManager;
+    private LoginButton mFacebookButton;
+    private FacebookCallback<LoginResult> mCallback;
 
     @Override
     public View onCreateView(
@@ -64,11 +69,21 @@ public class LoginFragment extends NGWLoginFragment {
             @Nullable
                     Bundle savedInstanceState)
     {
+        FacebookSdk.setApplicationId(getString(R.string.facebook_app_id));
+        //noinspection deprecation
+        FacebookSdk.sdkInitialize(getContext().getApplicationContext());
+        mCallbackManager = CallbackManager.Factory.create();
+
         final View view = inflater.inflate(R.layout.fragment_login, container, false);
         mLogin = (EditText) view.findViewById(R.id.login);
         mPassword = (EditText) view.findViewById(R.id.password);
         mSignInButton = (Button) view.findViewById(R.id.signup);
         view.findViewById(R.id.vk).setOnClickListener(this);
+        view.findViewById(R.id.fb).setOnClickListener(this);
+
+        mFacebookButton = (LoginButton) view.findViewById(R.id.fb_button);
+        mFacebookButton.setReadPermissions("email");
+        mFacebookButton.registerCallback(mCallbackManager, mCallback);
 
         mLogin.addTextChangedListener(new EmailWatcher());
         mPassword.addTextChangedListener(new PasswordWatcher());
@@ -79,6 +94,10 @@ public class LoginFragment extends NGWLoginFragment {
             mProgressDialog = new ProgressDialog(getActivity());
 
         return view;
+    }
+
+    public CallbackManager getCallbackManager() {
+        return mCallbackManager;
     }
 
     private void validatePassword(String password) {
@@ -101,6 +120,10 @@ public class LoginFragment extends NGWLoginFragment {
         switch (v.getId()) {
             case R.id.vk:
                 VKSdk.login(getActivity(), "email");
+                break;
+            case R.id.fb:
+                LoginManager.getInstance().logOut();
+                mFacebookButton.performClick();
                 break;
             default:
                 signup();
@@ -184,6 +207,10 @@ public class LoginFragment extends NGWLoginFragment {
         else if(loader.getId() == R.id.non_auth_token_loader) {
             onTokenReceived(Constants.ACCOUNT_NAME, Constants.ANONYMOUS);
         }
+    }
+
+    public void setCallback(FacebookCallback<LoginResult> callback) {
+        mCallback = callback;
     }
 
     public class LocalTextWatcher implements TextWatcher {
