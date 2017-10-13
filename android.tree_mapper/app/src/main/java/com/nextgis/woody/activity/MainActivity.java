@@ -35,6 +35,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -89,6 +90,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.Random;
 
 import static com.nextgis.maplib.util.Constants.NOT_FOUND;
 
@@ -312,6 +314,7 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
             public void onCompleted(JSONObject user, GraphResponse response) {
                 String email = user.optString("email");
                 String name = user.optString("name");
+                signup(name, email);
             }
         });
         Bundle parameters = new Bundle();
@@ -320,15 +323,41 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
         request.executeAsync();
     }
 
-    private void getVKUserData(String email) {
+    private void getVKUserData(final String email) {
         VKApi.users().get().executeWithListener(new VKRequest.VKRequestListener() {
             @SuppressWarnings("unchecked")
             @Override
             public void onComplete(VKResponse response) {
                 VKApiUser user = ((VKList<VKApiUser>)response.parsedModel).get(0);
-                Log.d("User name", user.first_name + " " + user.last_name);
+                signup(user.first_name + " " + user.last_name, email);
             }
         });
+    }
+
+    private void signup(String displayName, String email) {
+        FragmentManager fm = getSupportFragmentManager();
+        LoginFragment ngwLoginFragment = (LoginFragment) fm.findFragmentByTag(Constants.FRAGMENT_LOGIN);
+        if (ngwLoginFragment != null) {
+            String login = genUser();
+            String password = genPass();
+            ngwLoginFragment.signup(login, password, displayName, email);
+        }
+    }
+
+    public static String genUser() {
+        return "user" + System.currentTimeMillis();
+    }
+
+    // https://stackoverflow.com/a/5683362/2088273
+    private String genPass() {
+        char[] chars = "xgl5iNf0PUdTBIkVAcWLhO7jKumzRFSQets9JoHrGvpwb8na3C1XE6ZM42YqyD".toCharArray();
+        StringBuilder sb = new StringBuilder();
+        Random random = new Random();
+        for (int i = 0; i < 12; i++) {
+            char c = chars[random.nextInt(chars.length)];
+            sb.append(c);
+        }
+        return sb.toString();
     }
 
     protected boolean hasPermissions() {
@@ -349,7 +378,6 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
     protected void loadData() {
         final MainApplication app = (MainApplication) getApplication();
         final Account account = app.getAccount(Constants.ACCOUNT_NAME);
-
 
         class DownloadTask extends AsyncTask<Account, Integer, String> {
             private ProgressDialog mProgressDialog;
@@ -376,7 +404,7 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
                 final String sPassword = app.getAccountPassword(account);
                 final String URL = app.getAccountUrl(account);
 
-                if (null == URL || null == sLogin) {
+                if (TextUtils.isEmpty(URL) || TextUtils.isEmpty(sLogin)) {
                     return getString(R.string.error_auth);
                 }
 

@@ -28,15 +28,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
-import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.Loader;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import com.facebook.CallbackManager;
@@ -53,13 +49,12 @@ import com.nextgis.woody.util.Constants;
 import com.nextgis.woody.util.UiUtil;
 import com.vk.sdk.VKSdk;
 
-import java.util.regex.Pattern;
-
 public class LoginFragment extends NGWLoginFragment {
     protected ProgressDialog mProgressDialog;
     private CallbackManager mCallbackManager;
     private LoginButton mFacebookButton;
     private FacebookCallback<LoginResult> mCallback;
+    private View mFB, mVK;
 
     @Override
     public View onCreateView(
@@ -75,18 +70,15 @@ public class LoginFragment extends NGWLoginFragment {
         mCallbackManager = CallbackManager.Factory.create();
 
         final View view = inflater.inflate(R.layout.fragment_login, container, false);
-        mLogin = (EditText) view.findViewById(R.id.login);
-        mPassword = (EditText) view.findViewById(R.id.password);
-        mSignInButton = (Button) view.findViewById(R.id.signup);
-        view.findViewById(R.id.vk).setOnClickListener(this);
-        view.findViewById(R.id.fb).setOnClickListener(this);
+        mSignInButton = new Button(getContext());
+        mVK = view.findViewById(R.id.vk);
+        mVK.setOnClickListener(this);
+        mFB = view.findViewById(R.id.fb);
+        mFB.setOnClickListener(this);
 
         mFacebookButton = (LoginButton) view.findViewById(R.id.fb_button);
         mFacebookButton.setReadPermissions("email");
         mFacebookButton.registerCallback(mCallbackManager, mCallback);
-
-        mLogin.addTextChangedListener(new EmailWatcher());
-        mPassword.addTextChangedListener(new PasswordWatcher());
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
             mProgressDialog = new ProgressDialog(getActivity(), android.R.style.Theme_Material_Light_Dialog_Alert);
@@ -100,20 +92,6 @@ public class LoginFragment extends NGWLoginFragment {
         return mCallbackManager;
     }
 
-    private void validatePassword(String password) {
-        if (!Pattern.matches(Constants.PASSWORD_PATTERN, password) && password.length() > 0)
-            ((TextInputLayout) mPassword.getParent()).setError(getString(R.string.error_weak_password));
-        else
-            ((TextInputLayout) mPassword.getParent()).setErrorEnabled(false);
-    }
-
-    private void validateEmail(String email) {
-        if (!UiUtil.isEmailValid(email) && email.length() > 0)
-            ((TextInputLayout) mLogin.getParent()).setError(getString(R.string.email_not_valid));
-        else
-            ((TextInputLayout) mLogin.getParent()).setErrorEnabled(false);
-    }
-
     @Override
     public void onClick(View v)
     {
@@ -125,18 +103,18 @@ public class LoginFragment extends NGWLoginFragment {
                 LoginManager.getInstance().logOut();
                 mFacebookButton.performClick();
                 break;
-            default:
-                signup();
-                break;
         }
     }
 
-    private void signup() {
-        if (!UiUtil.isEmailValid(mLogin.getText().toString())) {
+    public void signup(final String login, final String password, final String displayName, final String email) {
+        if (!UiUtil.isEmailValid(email)) {
             Toast.makeText(getActivity(), R.string.email_not_valid, Toast.LENGTH_SHORT).show();
             return;
         }
+
         mSignInButton.setEnabled(false);
+        mVK.setEnabled(false);
+        mFB.setEnabled(false);
         Runnable signUp = new Runnable() {
             @Override
             public void run() {
@@ -145,7 +123,7 @@ public class LoginFragment extends NGWLoginFragment {
                 Thread t = new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        result[0] = NGWUtil.signUp(mUrlText, mLogin.getText().toString(), mPassword.getText().toString(), null, null);
+                        result[0] = NGWUtil.signUp(mUrlText, login, password, displayName, email);
                     }
                 });
                 t.start();
@@ -155,10 +133,14 @@ public class LoginFragment extends NGWLoginFragment {
                 }
 
                 if (result[0]) {
+                    mLoginText = login;
+                    mPasswordText = password;
                     getLoaderManager().restartLoader(R.id.auth_token_loader, null, LoginFragment.this);
-                }
-                else {
+                } else {
                     Toast.makeText(getActivity(), R.string.error_sign_up, Toast.LENGTH_LONG).show();
+                    mSignInButton.setEnabled(true);
+                    mVK.setEnabled(true);
+                    mFB.setEnabled(true);
                 }
 
                 if (mProgressDialog.isShowing()) {
@@ -176,12 +158,10 @@ public class LoginFragment extends NGWLoginFragment {
             Bundle args)
     {
         if (id == R.id.auth_token_loader) {
-            return new HTTPLoader(
-                    getActivity().getApplicationContext(), mUrlText, mLogin.getText().toString(), mPassword.getText().toString());
+            return new HTTPLoader(getActivity().getApplicationContext(), mUrlText, mLoginText, mPasswordText);
         }
         else if (id == R.id.non_auth_token_loader) {
-            return new HTTPLoader(
-                    getActivity().getApplicationContext(), mUrlText, null, null);
+            return new HTTPLoader(getActivity().getApplicationContext(), mUrlText, null, null);
         }
         return null;
     }
@@ -197,52 +177,18 @@ public class LoginFragment extends NGWLoginFragment {
         if (loader.getId() == R.id.auth_token_loader) {
             if (token != null && token.length() > 0) {
                 onTokenReceived(Constants.ACCOUNT_NAME, token);
-            }
-            else {
+            } else {
                 Toast.makeText(getActivity(), R.string.error_login, Toast.LENGTH_SHORT).show();
-
                 mSignInButton.setEnabled(true);
+                mVK.setEnabled(true);
+                mFB.setEnabled(true);
             }
-        }
-        else if(loader.getId() == R.id.non_auth_token_loader) {
+        } else if(loader.getId() == R.id.non_auth_token_loader) {
             onTokenReceived(Constants.ACCOUNT_NAME, Constants.ANONYMOUS);
         }
     }
 
     public void setCallback(FacebookCallback<LoginResult> callback) {
         mCallback = callback;
-    }
-
-    public class LocalTextWatcher implements TextWatcher {
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-        }
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-        }
-
-        @Override
-        public void afterTextChanged(Editable s) {
-
-        }
-    }
-
-    public class PasswordWatcher extends LocalTextWatcher {
-        @Override
-        public void afterTextChanged(Editable s) {
-            super.afterTextChanged(s);
-            validatePassword(s.toString());
-        }
-    }
-
-    public class EmailWatcher extends LocalTextWatcher {
-        @Override
-        public void afterTextChanged(Editable s) {
-            super.afterTextChanged(s);
-            validateEmail(s.toString());
-        }
     }
 }
