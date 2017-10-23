@@ -31,7 +31,8 @@ public interface SettingsConstants {
     String CITY_KEY = "kaliningrad";
 
     String BASEMAP_NAME = "base map";
-    String BASEMAP_URL = "https://api.mapbox.com/styles/v1/nasnimal/cir3nj27y004kcmkgfnw6u68o/tiles/256/{z}/{x}/{y}/?access_token=pk.eyJ1IjoibmFzbmltYWwiLCJhIjoiY2lvNXcxb29nMDA0YXc2bHkwc2hpNTB2MSJ9.C6eEm-ifqAKsgBIC_5mGZw";
+//    String BASEMAP_URL = "https://api.mapbox.com/styles/v1/nasnimal/cir3nj27y004kcmkgfnw6u68o/tiles/256/{z}/{x}/{y}/?access_token=pk.eyJ1IjoibmFzbmltYWwiLCJhIjoiY2lvNXcxb29nMDA0YXc2bHkwc2hpNTB2MSJ9.C6eEm-ifqAKsgBIC_5mGZw";
+    String BASEMAP_URL = "http://a.tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png";
 
     String KEY_PREF_USERMINX = "user_minx";
     String KEY_PREF_USERMINY = "user_miny";

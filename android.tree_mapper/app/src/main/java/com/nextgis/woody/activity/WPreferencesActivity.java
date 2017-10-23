@@ -22,10 +22,36 @@
 package com.nextgis.woody.activity;
 
 import com.nextgis.maplibui.activity.NGPreferenceActivity;
+import com.nextgis.maplibui.fragment.NGPreferenceHeaderFragment;
+import com.nextgis.maplibui.fragment.NGPreferenceSettingsFragment;
 
 /**
  * Created by bishop on 03.12.16.
  */
 
 public class WPreferencesActivity extends NGPreferenceActivity {
+    @Override
+    protected String getPreferenceHeaderFragmentTag() {
+        return null;
+    }
+
+    @Override
+    protected NGPreferenceHeaderFragment getNewPreferenceHeaderFragment() {
+        return null;
+    }
+
+    @Override
+    protected String getPreferenceSettingsFragmentTag() {
+        return null;
+    }
+
+    @Override
+    protected NGPreferenceSettingsFragment getNewPreferenceSettingsFragment(String subScreenKey) {
+        return null;
+    }
+
+    @Override
+    protected String getTitleString() {
+        return null;
+    }
 }

@@ -1,11 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ * Project:  Woody
+  ~ * Purpose:  Mobile application for trees mapping.
+  ~ * Author:   Dmitry Baryshnikov, dmitry.baryshnikov@nextgis.com
+  ~ * Author:   Stanislav Petriakov, becomeglory@gmail.com
+  ~ * *****************************************************************************
+  ~ * Copyright (c) 2016-2017 NextGIS, info@nextgis.com
+  ~ *
+  ~ * This program is free software: you can redistribute it and/or modify
+  ~ * it under the terms of the GNU General Public License as published by
+  ~ * the Free Software Foundation, either version 3 of the License, or
+  ~ * (at your option) any later version.
+  ~ *
+  ~ * This program is distributed in the hope that it will be useful,
+  ~ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ * GNU General Public License for more details.
+  ~ *
+  ~ * You should have received a copy of the GNU General Public License
+  ~ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
 <resources>
+    <integer name="com_vk_sdk_AppId">6214371</integer>
+    <string name="facebook_app_id">120351575299754</string>
+    <string name="fb_login_protocol_scheme">fb120351575299754</string>
     <string name="app_name">Woody</string>
-    <string name="email">e-mail</string>
+    <string name="email">Email</string>
     <string name="sign_up">Sign up</string>
     <string name="error_weak_password">Weak password</string>
-    <string name="email_not_valid">E-mail is not valid</string>
+    <string name="email_not_valid">Email is not valid</string>
     <string name="error_sign_up">Sign up failed</string>
-    <string name="signing_up">Signing up...</string>
+    <string name="signing_up">Signing up…</string>
     <string name="first_run">First run</string>
     <string name="error_init">Initialize error</string>
     <string name="look_for_city">Look for city</string>
@@ -14,7 +40,7 @@
     <string name="success_filled">Data loaded</string>
     <string name="version" translatable="false">v. %1$s (rev. %2$d)</string>
     <string name="app_description">The tree mapping application for cities. \nDesign by Alexander Kalashnikov (Urbica design), developing by Dmitry Baryshnikov (NextGIS). \nApplication concept created via ecohackathone ENTER 2016, Prague.</string>
-    <string name="copyright" translatable="false"><![CDATA[Copyright © <a href=\\\"http://nextgis.com\\\">NextGIS</a>, 2016]]></string>
+    <string name="copyright" translatable="false"><![CDATA[Copyright © <a href=\\\"http://nextgis.com\\\">NextGIS</a>, 2016-2017]]></string>
     <string name="action_about">About</string>
     <string name="state">Status</string>
     <string name="girth">Tree girth</string>
@@ -29,5 +55,5 @@
     <string name="back">Back</string>
     <string name="finish">Finish</string>
     <string name="message_important">Important</string>
-    <string name="message_need_permossions">To work properly the application need permissions to be set in system preferences</string>
+    <string name="message_need_permissions">To work properly the application needs permissions to be set for GPS, external storage and accounts.</string>
 </resources>

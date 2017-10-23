@@ -3,8 +3,9 @@
   ~ * Project:  Woody
   ~ * Purpose:  Mobile application for trees mapping.
   ~ * Author:   Dmitry Baryshnikov, dmitry.baryshnikov@nextgis.com
+  ~ * Author:   Stanislav Petriakov, becomeglory@gmail.com
   ~ * *****************************************************************************
-  ~ * Copyright (c) 2016 NextGIS, info@nextgis.com
+  ~ * Copyright (c) 2016-2017 NextGIS, info@nextgis.com
   ~ *
   ~ * This program is free software: you can redistribute it and/or modify
   ~ * it under the terms of the GNU General Public License as published by
@@ -22,19 +23,19 @@
 
 <resources>
     <string name="app_name">Вуди</string>
-    <string name="email">e-mail</string>
+    <string name="email">Эл. почта</string>
     <string name="sign_up">Зарегистрироваться</string>
     <string name="error_weak_password">Слабый пароль</string>
     <string name="email_not_valid">Неверный адрес электронной почты</string>
     <string name="error_sign_up">Регистрация не выполнена</string>
-    <string name="signing_up">Регистрация...</string>
+    <string name="signing_up">Регистрация…</string>
     <string name="first_run">Первый запуск</string>
-    <string name="error_init">Щшибка инициализации</string>
+    <string name="error_init">Ошибка инициализации</string>
     <string name="look_for_city">Выбор города</string>
     <string name="create_base_map">Создание картподложки</string>
     <string name="error_city_found">Город не найден</string>
     <string name="success_filled">Данные згружены</string>
-    <string name="app_description">Приложение для картирования деревьев в городе. \nДизайн Александра Калашникова (Urbica design), разработка Дмитрия Барышникова (NextGIS). \nКонцепт приложения разработан на экохакатоне ENTER 2016, Прага.</string>
+    <string name="app_description">Приложение для картирования деревьев в городе.\nДизайн Александра Калашникова (Urbica design), разработка Дмитрия Барышникова (NextGIS).\nКонцепт приложения разработан на экохакатоне ENTER 2016, Прага.</string>
     <string name="action_about">О программе</string>
     <string name="state">Состояние</string>
     <string name="girth">Обхват ствола</string>
@@ -49,5 +50,5 @@
     <string name="back">Назад</string>
     <string name="finish">Готово</string>
     <string name="message_important">Важно</string>
-    <string name="message_need_permossions">Для корректной работы необходимо дать разрешения приложению в настройкх системы</string>
+    <string name="message_need_permissions">Для корректной работы необходимо дать разрешения приложению для GPS, памяти устройства и аккаунтов.</string>
 </resources>
