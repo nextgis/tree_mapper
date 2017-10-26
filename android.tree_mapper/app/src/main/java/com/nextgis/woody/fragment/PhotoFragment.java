@@ -56,7 +56,7 @@ public class PhotoFragment extends Fragment {
             Bundle savedInstanceState)
     {
         View view = inflater.inflate(R.layout.fragment_empty, container, false);
-        LinearLayout layout = view.findViewById(R.id.photo_holder);
+        LinearLayout layout = (LinearLayout) view.findViewById(R.id.photo_holder);
         IFormControl control = (PhotoGallery) getActivity().getLayoutInflater().inflate(
                 com.nextgis.maplibui.R.layout.formtemplate_photo, layout, false);
 

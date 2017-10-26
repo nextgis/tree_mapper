@@ -116,7 +116,7 @@ public class MapFragment
         mMap.addOverlay(mCurrentLocationOverlay);
 
         //search relative view of map, if not found - add it
-        mMapRelativeLayout = view.findViewById(R.id.maprl);
+        mMapRelativeLayout = (RelativeLayout) view.findViewById(R.id.maprl);
         addMap();
 
         return view;
@@ -142,7 +142,7 @@ public class MapFragment
 
     private void addMap() {
         if (mMapRelativeLayout != null) {
-            FrameLayout map = mMapRelativeLayout.findViewById(R.id.mapfl);
+            FrameLayout map = (FrameLayout) mMapRelativeLayout.findViewById(R.id.mapfl);
             map.addView(mMap, 0, new RelativeLayout.LayoutParams(
                     RelativeLayout.LayoutParams.MATCH_PARENT,
                     RelativeLayout.LayoutParams.MATCH_PARENT));

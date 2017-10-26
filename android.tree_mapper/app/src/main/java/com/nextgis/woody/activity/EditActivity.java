@@ -100,9 +100,9 @@ public class EditActivity extends NGActivity implements View.OnClickListener {
         setContentView(R.layout.activity_edit);
         setToolbar(R.id.main_toolbar);
 
-        btLeft = findViewById(R.id.left_button);
+        btLeft = (Button) findViewById(R.id.left_button);
         btLeft.setOnClickListener(this);
-        btRight = findViewById(R.id.right_button);
+        btRight = (Button) findViewById(R.id.right_button);
         btRight.setOnClickListener(this);
 
         values = new ContentValues();
@@ -177,7 +177,7 @@ public class EditActivity extends NGActivity implements View.OnClickListener {
     private void firstStep() {
         currentStep = 1;
         setTitle(getText(R.string.point_on_map));
-        Toolbar toolbar = findViewById(R.id.main_toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar);
         toolbar.setSubtitle("1/6");
 
         btLeft.setText(R.string.cancel);
@@ -215,7 +215,7 @@ public class EditActivity extends NGActivity implements View.OnClickListener {
     private void secondStep() {
         currentStep = 2;
         setTitle(getText(R.string.species));
-        Toolbar toolbar = findViewById(R.id.main_toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar);
         toolbar.setSubtitle("2/6");
         btLeft.setText(R.string.back);
 
@@ -238,7 +238,7 @@ public class EditActivity extends NGActivity implements View.OnClickListener {
     private void thirdStep() {
         currentStep = 3;
         setTitle(getText(R.string.status));
-        Toolbar toolbar = findViewById(R.id.main_toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar);
         toolbar.setSubtitle("3/6");
 
         FragmentManager fm = getSupportFragmentManager();
@@ -252,7 +252,7 @@ public class EditActivity extends NGActivity implements View.OnClickListener {
     private void fourthStep() {
         currentStep = 4;
         setTitle(getText(R.string.age));
-        Toolbar toolbar = findViewById(R.id.main_toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar);
         toolbar.setSubtitle("4/6");
 
         FragmentManager fm = getSupportFragmentManager();
@@ -266,7 +266,7 @@ public class EditActivity extends NGActivity implements View.OnClickListener {
     private void fifthStep() {
         currentStep = 5;
         setTitle(getText(R.string.year));
-        Toolbar toolbar = findViewById(R.id.main_toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar);
         toolbar.setSubtitle("5/6");
         btRight.setText(R.string.next);
 
@@ -289,7 +289,7 @@ public class EditActivity extends NGActivity implements View.OnClickListener {
     private void sixthStep() {
         currentStep = 6;
         setTitle(getText(R.string.photo));
-        Toolbar toolbar = findViewById(R.id.main_toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar);
         toolbar.setSubtitle("6/6");
         btRight.setText(R.string.finish);
 
@@ -363,7 +363,7 @@ public class EditActivity extends NGActivity implements View.OnClickListener {
                 fourthStep();
                 break;
             case 6:
-                PhotoGallery gallery = findViewById(com.nextgis.maplibui.R.id.pg_photos);
+                PhotoGallery gallery = (PhotoGallery) findViewById(com.nextgis.maplibui.R.id.pg_photos);
                 if (gallery != null)
                     mImages = gallery.getImagesPath();
                 fifthStep();
@@ -464,7 +464,7 @@ public class EditActivity extends NGActivity implements View.OnClickListener {
     }
 
     private void putAttaches() {
-        PhotoGallery gallery = findViewById(com.nextgis.maplibui.R.id.pg_photos);
+        PhotoGallery gallery = (PhotoGallery) findViewById(com.nextgis.maplibui.R.id.pg_photos);
 
         if (gallery != null && mFeatureId != NOT_FOUND) {
             List<Integer> deletedAttaches = gallery.getDeletedAttaches();
@@ -526,7 +526,7 @@ public class EditActivity extends NGActivity implements View.OnClickListener {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        PhotoGallery gallery = findViewById(com.nextgis.maplibui.R.id.pg_photos);
+        PhotoGallery gallery = (PhotoGallery) findViewById(com.nextgis.maplibui.R.id.pg_photos);
         if (gallery != null)
             gallery.onActivityResult(requestCode, resultCode, data);
     }
