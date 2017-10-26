@@ -63,7 +63,7 @@ public class ListViewFragment extends Fragment {
     public void fill(Map<String, String> data, String selection) {
         listContent = new ArrayList<>(data.values());
         ltData = data;
-        this.selection = listContent.indexOf(selection);
+        this.selection = new ArrayList<>(ltData.keySet()).indexOf(selection);
         if(this.selection < 0 || this.selection > listContent.size())
             this.selection = 0;
         setAdapter();
