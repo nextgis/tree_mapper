@@ -159,7 +159,7 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        start();
+        checkPermissions();
     }
 
     private void start() {
@@ -168,7 +168,7 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
         final Account account = app.getAccount(Constants.ACCOUNT_NAME);
         // check if has safe forest account
         if (account == null) {
-            createPermissionsView();
+            createAccountView();
         } else {
             // check basic layers
             if (!hasBasicLayers(app.getMap())) {
@@ -195,7 +195,7 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
         switch (requestCode) {
             case PERMISSIONS_REQUEST:
                 if (isGrantResultsOk(grantResults))
-                    createAccountView();
+                    start();
                 break;
             default:
                 super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -229,10 +229,16 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
                                                 Manifest.permission.WRITE_EXTERNAL_STORAGE};
             requestPermissions(R.string.message_important, R.string.message_need_permissions, PERMISSIONS_REQUEST, permissions);
         } else
-            createAccountView();
+            start();
     }
 
     protected void createAccountView() {
+        final MainApplication app = (MainApplication) getApplication();
+        final Account account = app.getAccount(Constants.ACCOUNT_NAME);
+        if (account != null) {
+            return;
+        }
+
         FragmentManager fm = getSupportFragmentManager();
         LoginFragment ngwLoginFragment = (LoginFragment) fm.findFragmentByTag(Constants.FRAGMENT_LOGIN);
 
