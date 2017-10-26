@@ -2,8 +2,9 @@
  *  Project:  Woody
  *  Purpose:  Mobile application for trees mapping.
  *  Author:   Dmitry Baryshnikov, dmitry.baryshnikov@nextgis.com
+ *  Author:   Stanislav Petriakov, becomeglory@gmail.com
  *  *****************************************************************************
- *  Copyright (c) 2016 NextGIS, info@nextgis.com
+ *  Copyright (c) 2016-2017 NextGIS, info@nextgis.com
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -23,6 +24,7 @@ package com.nextgis.woody.fragment;
 
 import android.content.SharedPreferences;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -73,6 +75,7 @@ public class MapFragment
     protected CurrentLocationOverlay mCurrentLocationOverlay;
     protected SelectLocationOverlay mSelectLocationOverlay;
     protected boolean mShowSelectLocation;
+    protected Location mLocation;
 
     protected GeoPoint mCurrentCenter;
 
@@ -106,11 +109,14 @@ public class MapFragment
         mSelectLocationOverlay = new SelectLocationOverlay(getActivity(), mMap);
         mSelectLocationOverlay.setVisibility(mShowSelectLocation);
 
+        if (mLocation != null)
+            mSelectLocationOverlay.setSelectedLocation(mLocation);
+
         mMap.addOverlay(mSelectLocationOverlay);
         mMap.addOverlay(mCurrentLocationOverlay);
 
         //search relative view of map, if not found - add it
-        mMapRelativeLayout = (RelativeLayout) view.findViewById(R.id.maprl);
+        mMapRelativeLayout = view.findViewById(R.id.maprl);
         addMap();
 
         return view;
@@ -136,7 +142,7 @@ public class MapFragment
 
     private void addMap() {
         if (mMapRelativeLayout != null) {
-            FrameLayout map = (FrameLayout) mMapRelativeLayout.findViewById(R.id.mapfl);
+            FrameLayout map = mMapRelativeLayout.findViewById(R.id.mapfl);
             map.addView(mMap, 0, new RelativeLayout.LayoutParams(
                     RelativeLayout.LayoutParams.MATCH_PARENT,
                     RelativeLayout.LayoutParams.MATCH_PARENT));
@@ -158,7 +164,7 @@ public class MapFragment
 
             mMap.removeListener(this);
         }
-        edit.commit();
+        edit.apply();
 
         super.onPause();
     }
@@ -184,7 +190,7 @@ public class MapFragment
 
                 final SharedPreferences.Editor edit = prefs.edit();
                 edit.putBoolean(SettingsConstants.KEY_PREF_MAP_FIRST_VIEW, false);
-                edit.commit();
+                edit.apply();
             }
             else {
                 float mMapZoom;
@@ -400,5 +406,12 @@ public class MapFragment
         pt.project(CRS_WEB_MERCATOR);
 
         return pt;
+    }
+
+    public void setSelectedPosition(GeoPoint geoPoint) {
+        geoPoint.project(CRS_WGS84);
+        mLocation = new Location(LocationManager.GPS_PROVIDER);
+        mLocation.setLatitude(geoPoint.getY());
+        mLocation.setLongitude(geoPoint.getX());
     }
 }
