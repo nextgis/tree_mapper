@@ -2,8 +2,9 @@
  *  Project:  Woody
  *  Purpose:  Mobile application for trees mapping.
  *  Author:   Dmitry Baryshnikov, dmitry.baryshnikov@nextgis.com
+ *  Author:   Stanislav Petriakov, becomeglory@gmail.com
  *  *****************************************************************************
- *  Copyright (c) 2016 NextGIS, info@nextgis.com
+ *  Copyright (c) 2016-2017 NextGIS, info@nextgis.com
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -37,6 +38,8 @@ import com.nextgis.woody.util.Constants;
 
 import org.json.JSONException;
 
+import java.util.ArrayList;
+
 /**
  * Created by bishop on 11.12.16.
  */
@@ -44,6 +47,7 @@ import org.json.JSONException;
 public class PhotoFragment extends Fragment {
 
     private long mFeatureId;
+    private ArrayList<String> mImages;
 
     @Override
     public View onCreateView(
@@ -52,7 +56,7 @@ public class PhotoFragment extends Fragment {
             Bundle savedInstanceState)
     {
         View view = inflater.inflate(R.layout.fragment_empty, container, false);
-        LinearLayout layout = (LinearLayout) view.findViewById(R.id.photo_holder);
+        LinearLayout layout = view.findViewById(R.id.photo_holder);
         IFormControl control = (PhotoGallery) getActivity().getLayoutInflater().inflate(
                 com.nextgis.maplibui.R.layout.formtemplate_photo, layout, false);
 
@@ -64,11 +68,19 @@ public class PhotoFragment extends Fragment {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
+        if (mImages != null)
+            ((PhotoGallery) control).restoreImages(mImages);
+
         control.addToLayout(layout);
         return view;
     }
 
     public void setmFeatureId(long mFeatureId) {
         this.mFeatureId = mFeatureId;
+    }
+
+    public void setImages(ArrayList<String> images) {
+        mImages = images;
     }
 }

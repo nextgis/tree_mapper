@@ -2,8 +2,9 @@
  *  Project:  Woody
  *  Purpose:  Mobile application for trees mapping.
  *  Author:   Dmitry Baryshnikov, dmitry.baryshnikov@nextgis.com
+ *  Author:   Stanislav Petriakov, becomeglory@gmail.com
  *  *****************************************************************************
- *  Copyright (c) 2016 NextGIS, info@nextgis.com
+ *  Copyright (c) 2016-2017 NextGIS, info@nextgis.com
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -36,7 +37,7 @@ import android.widget.Toast;
 
 import com.nextgis.maplib.api.IGISApplication;
 import com.nextgis.maplib.datasource.Feature;
-import com.nextgis.maplib.datasource.GeoMultiPoint;
+import com.nextgis.maplib.datasource.GeoGeometryFactory;
 import com.nextgis.maplib.datasource.GeoPoint;
 import com.nextgis.maplib.map.MapBase;
 import com.nextgis.maplib.map.NGWLookupTable;
@@ -46,7 +47,6 @@ import com.nextgis.maplib.util.AccountUtil;
 import com.nextgis.maplib.util.MapUtil;
 import com.nextgis.maplib.util.NGException;
 import com.nextgis.maplibui.activity.NGActivity;
-import com.nextgis.maplibui.api.IFormControl;
 import com.nextgis.maplibui.control.PhotoGallery;
 import com.nextgis.woody.R;
 import com.nextgis.woody.fragment.ListViewFragment;
@@ -55,14 +55,13 @@ import com.nextgis.woody.fragment.PhotoFragment;
 import com.nextgis.woody.util.Constants;
 import com.nextgis.woody.util.SettingsConstants;
 
-import org.json.JSONException;
-
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -70,10 +69,7 @@ import java.util.Map;
 
 import static com.nextgis.maplib.util.Constants.FIELD_GEOM;
 import static com.nextgis.maplib.util.Constants.NOT_FOUND;
-import static com.nextgis.maplib.util.Constants.TAG;
-import static com.nextgis.maplib.util.GeoConstants.CRS_WEB_MERCATOR;
-import static com.nextgis.maplib.util.GeoConstants.CRS_WGS84;
-import static com.nextgis.woody.util.Constants.FIELD_PLANT_DT;
+import static com.nextgis.woody.util.Constants.KEY_LT_YEAR;
 import static com.nextgis.woody.util.Constants.WTAG;
 
 /**
@@ -81,12 +77,16 @@ import static com.nextgis.woody.util.Constants.WTAG;
  */
 
 public class EditActivity extends NGActivity implements View.OnClickListener {
+    private static final String BUNDLE_VALUES = "SAVED_VALUES";
+    private static final String BUNDLE_STATE = "CURRENT_STATE";
+    private static final String BUNDLE_IMAGES = "IMAGES";
 
     private Button btLeft, btRight;
     private char currentStep;
     private ContentValues values;
     private long mFeatureId;
     private GeoPoint mapCenter;
+    private ArrayList<String> mImages;
 
     @Override
     public int getThemeId() {
@@ -100,9 +100,9 @@ public class EditActivity extends NGActivity implements View.OnClickListener {
         setContentView(R.layout.activity_edit);
         setToolbar(R.id.main_toolbar);
 
-        btLeft = (Button) findViewById(R.id.left_button);
+        btLeft = findViewById(R.id.left_button);
         btLeft.setOnClickListener(this);
-        btRight = (Button) findViewById(R.id.right_button);
+        btRight = findViewById(R.id.right_button);
         btRight.setOnClickListener(this);
 
         values = new ContentValues();
@@ -110,21 +110,74 @@ public class EditActivity extends NGActivity implements View.OnClickListener {
         Intent intent = this.getIntent();
         mFeatureId = intent.getLongExtra(Constants.FEATURE_ID, NOT_FOUND);
         mapCenter = new GeoPoint(intent.getDoubleExtra(SettingsConstants.KEY_PREF_SCROLL_X, 0),
-                intent.getDoubleExtra(SettingsConstants.KEY_PREF_SCROLL_Y, 0));
+                                 intent.getDoubleExtra(SettingsConstants.KEY_PREF_SCROLL_Y, 0));
 
-        if(NOT_FOUND != mFeatureId) {
+        if (savedInstanceState != null)
+            mFeatureId = savedInstanceState.getLong(Constants.FEATURE_ID, mFeatureId);
+
+        if (NOT_FOUND != mFeatureId) {
             MapBase mapBase = MapBase.getInstance();
             NGWVectorLayer vectorLayer = (NGWVectorLayer) mapBase.getLayerByName(Constants.KEY_MAIN);
             Feature feature = vectorLayer.getFeature(mFeatureId);
             values = feature.getContentValues(true);
         }
-        firstStep();
+
+        int state = 1;
+        if (savedInstanceState != null) {
+            if (savedInstanceState.containsKey(BUNDLE_VALUES))
+                values = savedInstanceState.getParcelable(BUNDLE_VALUES);
+
+            if (savedInstanceState.containsKey(BUNDLE_IMAGES))
+                mImages = savedInstanceState.getStringArrayList(BUNDLE_IMAGES);
+
+            mapCenter = new GeoPoint(savedInstanceState.getDouble(SettingsConstants.KEY_PREF_SCROLL_X, mapCenter.getX()),
+                                     savedInstanceState.getDouble(SettingsConstants.KEY_PREF_SCROLL_Y, mapCenter.getY()));
+
+            state = savedInstanceState.getInt(BUNDLE_STATE, 1);
+        }
+
+        switch (state) {
+            case 1:
+                firstStep();
+                break;
+            case 2:
+                secondStep();
+                break;
+            case 3:
+                thirdStep();
+                break;
+            case 4:
+                fourthStep();
+                break;
+            case 5:
+                fifthStep();
+                break;
+            case 6:
+                sixthStep();
+                break;
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (currentStep == 1)
+            saveCoordinates();
+
+        outState.putParcelable(BUNDLE_VALUES, values);
+        outState.putInt(BUNDLE_STATE, currentStep);
+        outState.putLong(Constants.FEATURE_ID, mFeatureId);
+        outState.putDouble(SettingsConstants.KEY_PREF_SCROLL_X, mapCenter.getX());
+        outState.putDouble(SettingsConstants.KEY_PREF_SCROLL_Y, mapCenter.getY());
+
+        if (mImages != null && currentStep != 6)
+            outState.putStringArrayList(BUNDLE_IMAGES, mImages);
     }
 
     private void firstStep() {
         currentStep = 1;
         setTitle(getText(R.string.point_on_map));
-        Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar);
+        Toolbar toolbar = findViewById(R.id.main_toolbar);
         toolbar.setSubtitle("1/6");
 
         btLeft.setText(R.string.cancel);
@@ -136,15 +189,22 @@ public class EditActivity extends NGActivity implements View.OnClickListener {
             mapFragment = new MapFragment();
             mapFragment.setSelectedLocationVisible(true);
 
-            MapBase mapBase = MapBase.getInstance();
-            NGWVectorLayer vectorLayer = (NGWVectorLayer) mapBase.getLayerByName(Constants.KEY_MAIN);
-            Feature feature = vectorLayer.getFeature(mFeatureId);
-            if(null != feature) {
-                mapFragment.setZoomAndPosition(18, (GeoPoint) feature.getGeometry());
-            }
-            else {
-                mapFragment.setZoomAndPosition(18, mapCenter);
-            }
+            try {
+                if (values.containsKey(FIELD_GEOM)) {
+                    GeoPoint pt = (GeoPoint) GeoGeometryFactory.fromBlob((byte[]) values.get(FIELD_GEOM));
+                    mapFragment.setSelectedPosition((GeoPoint) pt.copy());
+                    mapFragment.setZoomAndPosition(18, pt);
+                } else {
+                    MapBase mapBase = MapBase.getInstance();
+                    NGWVectorLayer vectorLayer = (NGWVectorLayer) mapBase.getLayerByName(Constants.KEY_MAIN);
+                    Feature feature = vectorLayer.getFeature(mFeatureId);
+                    if (null != feature) {
+                        mapFragment.setZoomAndPosition(18, (GeoPoint) feature.getGeometry());
+                    } else {
+                        mapFragment.setZoomAndPosition(18, mapCenter);
+                    }
+                }
+            } catch (IOException | ClassNotFoundException ignored) {}
         }
 
         FragmentTransaction ft = fm.beginTransaction();
@@ -155,7 +215,7 @@ public class EditActivity extends NGActivity implements View.OnClickListener {
     private void secondStep() {
         currentStep = 2;
         setTitle(getText(R.string.species));
-        Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar);
+        Toolbar toolbar = findViewById(R.id.main_toolbar);
         toolbar.setSubtitle("2/6");
         btLeft.setText(R.string.back);
 
@@ -178,7 +238,7 @@ public class EditActivity extends NGActivity implements View.OnClickListener {
     private void thirdStep() {
         currentStep = 3;
         setTitle(getText(R.string.status));
-        Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar);
+        Toolbar toolbar = findViewById(R.id.main_toolbar);
         toolbar.setSubtitle("3/6");
 
         FragmentManager fm = getSupportFragmentManager();
@@ -192,7 +252,7 @@ public class EditActivity extends NGActivity implements View.OnClickListener {
     private void fourthStep() {
         currentStep = 4;
         setTitle(getText(R.string.age));
-        Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar);
+        Toolbar toolbar = findViewById(R.id.main_toolbar);
         toolbar.setSubtitle("4/6");
 
         FragmentManager fm = getSupportFragmentManager();
@@ -206,7 +266,7 @@ public class EditActivity extends NGActivity implements View.OnClickListener {
     private void fifthStep() {
         currentStep = 5;
         setTitle(getText(R.string.year));
-        Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar);
+        Toolbar toolbar = findViewById(R.id.main_toolbar);
         toolbar.setSubtitle("5/6");
         btRight.setText(R.string.next);
 
@@ -229,7 +289,7 @@ public class EditActivity extends NGActivity implements View.OnClickListener {
     private void sixthStep() {
         currentStep = 6;
         setTitle(getText(R.string.photo));
-        Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar);
+        Toolbar toolbar = findViewById(R.id.main_toolbar);
         toolbar.setSubtitle("6/6");
         btRight.setText(R.string.finish);
 
@@ -244,6 +304,9 @@ public class EditActivity extends NGActivity implements View.OnClickListener {
         ft.commit();
 
         photoFragment.setmFeatureId(mFeatureId);
+
+        if (mImages != null)
+            photoFragment.setImages(mImages);
     }
 
     private void onNext() {
@@ -300,6 +363,9 @@ public class EditActivity extends NGActivity implements View.OnClickListener {
                 fourthStep();
                 break;
             case 6:
+                PhotoGallery gallery = findViewById(com.nextgis.maplibui.R.id.pg_photos);
+                if (gallery != null)
+                    mImages = gallery.getImagesPath();
                 fifthStep();
                 break;
         }
@@ -318,16 +384,15 @@ public class EditActivity extends NGActivity implements View.OnClickListener {
     }
 
     private void save() throws NGException {
-
         // Add constant values
         values.put(Constants.FIELD_DATETIME, Calendar.getInstance().getTimeInMillis());
+        values.remove(KEY_LT_YEAR);
 
         AccountUtil.AccountData accountData;
         try {
             accountData = AccountUtil.getAccountData(this, Constants.ACCOUNT_NAME);
             values.put(Constants.FIELD_REPORTER, accountData.login);
-        }
-        catch (IllegalStateException e) {
+        } catch (IllegalStateException e) {
             throw new NGException(getString(com.nextgis.maplib.R.string.error_auth));
         }
 
@@ -338,8 +403,7 @@ public class EditActivity extends NGActivity implements View.OnClickListener {
             throw new IllegalArgumentException("Not a IGISApplication");
         }
 
-        Uri uri = Uri.parse(
-                "content://" + app.getAuthority() + "/" + Constants.KEY_MAIN);
+        Uri uri = Uri.parse("content://" + app.getAuthority() + "/" + Constants.KEY_MAIN);
 
         if (mFeatureId == NOT_FOUND) {
             // we need to get proper mFeatureId for new features first
@@ -347,12 +411,10 @@ public class EditActivity extends NGActivity implements View.OnClickListener {
             if (result == null) {
                 Toast.makeText(this, getText(com.nextgis.maplibui.R.string.error_db_insert), Toast.LENGTH_SHORT).show();
                 return;
-            }
-            else {
+            } else {
                 mFeatureId = Long.parseLong(result.getLastPathSegment());
             }
-        }
-        else {
+        } else {
             Uri updateUri = ContentUris.withAppendedId(uri, mFeatureId);
             boolean valuesUpdated = getContentResolver().update(updateUri, values, null, null) == 1;
             if (!valuesUpdated) {
@@ -390,6 +452,7 @@ public class EditActivity extends NGActivity implements View.OnClickListener {
                 String sDate = lvFragment.getSelection();
                 convertedDate = dateFormat.parse(sDate);
                 values.put(Constants.FIELD_PLANT_DT, convertedDate.getTime());
+                values.put(Constants.KEY_LT_YEAR, sDate);
             } catch (ParseException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -401,7 +464,7 @@ public class EditActivity extends NGActivity implements View.OnClickListener {
     }
 
     private void putAttaches() {
-        PhotoGallery gallery = (PhotoGallery) findViewById(com.nextgis.maplibui.R.id.pg_photos);
+        PhotoGallery gallery = findViewById(com.nextgis.maplibui.R.id.pg_photos);
 
         if (gallery != null && mFeatureId != NOT_FOUND) {
             List<Integer> deletedAttaches = gallery.getDeletedAttaches();
@@ -463,7 +526,7 @@ public class EditActivity extends NGActivity implements View.OnClickListener {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        PhotoGallery gallery = (PhotoGallery) findViewById(com.nextgis.maplibui.R.id.pg_photos);
+        PhotoGallery gallery = findViewById(com.nextgis.maplibui.R.id.pg_photos);
         if (gallery != null)
             gallery.onActivityResult(requestCode, resultCode, data);
     }
