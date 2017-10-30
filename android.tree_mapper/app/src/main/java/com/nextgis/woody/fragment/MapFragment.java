@@ -66,7 +66,7 @@ import static com.nextgis.maplib.util.GeoConstants.CRS_WGS84;
 
 public class MapFragment
         extends Fragment
-        implements MapViewEventListener, GpsEventListener {
+        implements MapViewEventListener, GpsEventListener, View.OnClickListener {
 
     protected MainApplication mApp;
     protected MapViewOverlays mMap;
@@ -116,8 +116,12 @@ public class MapFragment
         mMap.addOverlay(mCurrentLocationOverlay);
 
         //search relative view of map, if not found - add it
-        mMapRelativeLayout = (RelativeLayout) view.findViewById(R.id.maprl);
+        mMapRelativeLayout = view.findViewById(R.id.maprl);
         addMap();
+
+        view.findViewById(R.id.action_locate).setOnClickListener(this);
+        view.findViewById(R.id.action_zoom_in).setOnClickListener(this);
+        view.findViewById(R.id.action_zoom_out).setOnClickListener(this);
 
         return view;
     }
@@ -142,7 +146,7 @@ public class MapFragment
 
     private void addMap() {
         if (mMapRelativeLayout != null) {
-            FrameLayout map = (FrameLayout) mMapRelativeLayout.findViewById(R.id.mapfl);
+            FrameLayout map = mMapRelativeLayout.findViewById(R.id.mapfl);
             map.addView(mMap, 0, new RelativeLayout.LayoutParams(
                     RelativeLayout.LayoutParams.MATCH_PARENT,
                     RelativeLayout.LayoutParams.MATCH_PARENT));
@@ -413,5 +417,20 @@ public class MapFragment
         mLocation = new Location(LocationManager.GPS_PROVIDER);
         mLocation.setLatitude(geoPoint.getY());
         mLocation.setLongitude(geoPoint.getX());
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.action_zoom_in:
+                mMap.zoomIn();
+                break;
+            case R.id.action_zoom_out:
+                mMap.zoomOut();
+                break;
+            case R.id.action_locate:
+                locateCurrentPosition();
+                break;
+        }
     }
 }

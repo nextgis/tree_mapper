@@ -23,6 +23,7 @@
 <RelativeLayout
     android:id="@+id/maprl"
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -31,4 +32,46 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
+        android:paddingTop="86dp"
+        android:orientation="vertical">
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/action_zoom_in"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            fab:fab_colorNormal="?attr/colorAccent"
+            fab:fab_colorPressed="?attr/colorPrimaryDark"
+            fab:fab_addButtonPlusIconColor="@android:color/white"
+            fab:fab_icon="@drawable/ic_plus"
+            fab:fab_size="mini"/>
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/action_zoom_out"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            fab:fab_colorNormal="?attr/colorAccent"
+            fab:fab_colorPressed="?attr/colorPrimaryDark"
+            fab:fab_addButtonPlusIconColor="@android:color/white"
+            fab:fab_icon="@drawable/ic_minus"
+            fab:fab_size="mini"/>
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/action_locate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            fab:fab_colorNormal="?attr/colorAccent"
+            fab:fab_colorPressed="?attr/colorPrimaryDark"
+            fab:fab_addButtonPlusIconColor="@android:color/white"
+            fab:fab_icon="@drawable/ic_location"
+            fab:fab_size="mini"/>
+    </LinearLayout>
 </RelativeLayout>
