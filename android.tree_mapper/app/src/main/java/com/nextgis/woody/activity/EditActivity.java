@@ -29,8 +29,10 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -109,8 +111,7 @@ public class EditActivity extends NGActivity implements View.OnClickListener {
 
         Intent intent = this.getIntent();
         mFeatureId = intent.getLongExtra(Constants.FEATURE_ID, NOT_FOUND);
-        mapCenter = new GeoPoint(intent.getDoubleExtra(SettingsConstants.KEY_PREF_SCROLL_X, 0),
-                                 intent.getDoubleExtra(SettingsConstants.KEY_PREF_SCROLL_Y, 0));
+        mapCenter = new GeoPoint(intent.getDoubleExtra(SettingsConstants.KEY_PREF_SCROLL_X, 0), intent.getDoubleExtra(SettingsConstants.KEY_PREF_SCROLL_Y, 0));
 
         if (savedInstanceState != null)
             mFeatureId = savedInstanceState.getLong(Constants.FEATURE_ID, mFeatureId);
@@ -444,7 +445,7 @@ public class EditActivity extends NGActivity implements View.OnClickListener {
         FragmentManager fm = getSupportFragmentManager();
         ListViewFragment lvFragment = (ListViewFragment) fm.findFragmentByTag(Constants.FRAGMENT_LISTVIEW);
 
-        if(key.equals(Constants.KEY_LT_YEAR)) {
+        if (key.equals(Constants.KEY_LT_YEAR)) {
             // Parse string d.M.yyyy to date nd time
             SimpleDateFormat dateFormat = new SimpleDateFormat("d.M.yyyy");
             Date convertedDate;
@@ -457,8 +458,7 @@ public class EditActivity extends NGActivity implements View.OnClickListener {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-        }
-        else {
+        } else {
             values.put(key, lvFragment.getSelection());
         }
     }
@@ -469,8 +469,8 @@ public class EditActivity extends NGActivity implements View.OnClickListener {
         if (gallery != null && mFeatureId != NOT_FOUND) {
             List<Integer> deletedAttaches = gallery.getDeletedAttaches();
             IGISApplication application = (IGISApplication) getApplication();
-            Uri uri = Uri.parse("content://" + application.getAuthority() + "/" +
-                    Constants.KEY_MAIN + "/" + mFeatureId + "/" + com.nextgis.maplib.util.Constants.URI_ATTACH);
+            Uri uri = Uri.parse("content://" + application
+                    .getAuthority() + "/" + Constants.KEY_MAIN + "/" + mFeatureId + "/" + com.nextgis.maplib.util.Constants.URI_ATTACH);
 
             int size = deletedAttaches.size();
             String[] args = new String[size];
@@ -480,7 +480,7 @@ public class EditActivity extends NGActivity implements View.OnClickListener {
             if (size > 0)
                 getContentResolver().delete(uri, MapUtil.makePlaceholders(size), args);
 
-            List<String> imagesPath =  gallery.getNewAttaches();
+            List<String> imagesPath = gallery.getNewAttaches();
             for (String path : imagesPath) {
                 String[] segments = path.split("/");
                 String name = segments.length > 0 ? segments[segments.length - 1] : "image.jpg";
@@ -529,5 +529,26 @@ public class EditActivity extends NGActivity implements View.OnClickListener {
         PhotoGallery gallery = (PhotoGallery) findViewById(com.nextgis.maplibui.R.id.pg_photos);
         if (gallery != null)
             gallery.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                AlertDialog.Builder confirmation = new AlertDialog.Builder(this);
+                confirmation.setTitle(R.string.are_you_sure).setMessage(R.string.unsaved_data).setPositiveButton(R.string.ok, null)
+                            .setNegativeButton(R.string.cancel, null);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (currentStep > 1)
+            onPrevious();
+        else
+            super.onBackPressed();
     }
 }
