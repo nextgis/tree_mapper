@@ -2,8 +2,9 @@
  *  Project:  Woody
  *  Purpose:  Mobile application for trees mapping.
  *  Author:   Dmitry Baryshnikov, dmitry.baryshnikov@nextgis.com
+ *  Author:   Stanislav Petriakov, becomeglory@gmail.com
  *  *****************************************************************************
- *  Copyright (c) 2016 NextGIS, info@nextgis.com
+ *  Copyright (c) 2016-2017 NextGIS, info@nextgis.com
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -26,17 +27,15 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.TextView;
 
-import com.keenfin.easypicker.PhotoPicker;
 import com.nextgis.maplib.api.ILayer;
 import com.nextgis.maplib.datasource.Feature;
 import com.nextgis.maplib.datasource.GeoPoint;
 import com.nextgis.maplib.map.MapBase;
 import com.nextgis.maplib.map.VectorLayer;
 import com.nextgis.maplib.util.AttachItem;
-import com.nextgis.maplibui.util.ControlHelper;
+import com.nextgis.maplibui.control.PhotoGallery;
 import com.nextgis.woody.R;
 import com.nextgis.woody.activity.MainActivity;
 import com.nextgis.woody.util.Constants;
@@ -50,7 +49,6 @@ import java.util.Map;
  */
 
 public class TreeDetailsFragment extends Fragment implements View.OnClickListener {
-
     private TextView tvSpecies;
     private TextView tvCoordinates;
     private TextView tvGirth;
@@ -58,27 +56,22 @@ public class TreeDetailsFragment extends Fragment implements View.OnClickListene
     private TextView tvState;
     private TextView tvHeight;
     private Feature currentFeature;
-    private FrameLayout frameLayout;
+    private PhotoGallery gallery;
 
     @Override
-    public View onCreateView(
-            LayoutInflater inflater,
-            ViewGroup container,
-            Bundle savedInstanceState)
-    {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_tree_details, container, false);
-        tvSpecies = (TextView) view.findViewById(R.id.species);
-        tvCoordinates = (TextView) view.findViewById(R.id.coordinates);
-        tvGirth = (TextView) view.findViewById(R.id.girth);
-        tvAge = (TextView) view.findViewById(R.id.age);
-        tvState = (TextView) view.findViewById(R.id.state);
-        tvHeight = (TextView) view.findViewById(R.id.height);
+        tvSpecies = view.findViewById(R.id.species);
+        tvCoordinates = view.findViewById(R.id.coordinates);
+        tvGirth = view.findViewById(R.id.girth);
+        tvAge = view.findViewById(R.id.age);
+        tvState = view.findViewById(R.id.state);
+        tvHeight = view.findViewById(R.id.height);
+        gallery= view.findViewById(R.id.photo_gallery);
 
         view.findViewById(R.id.close_action).setOnClickListener(this);
         view.findViewById(R.id.delete_action).setOnClickListener(this);
         view.findViewById(R.id.edit_action).setOnClickListener(this);
-
-        frameLayout = (FrameLayout) view.findViewById(R.id.photo_gallery);
 
         currentFeature = null;
 
@@ -91,7 +84,7 @@ public class TreeDetailsFragment extends Fragment implements View.OnClickListene
         tvSpecies.setText(feature.getFieldValueAsString(Constants.KEY_LT_SPECIES));
         GeoPoint pt = (GeoPoint) feature.getGeometry().copy();
         pt.project(4326);
-        tvCoordinates.setText( String.format( "%.6f, %.6f", pt.getY(), pt.getX()) );
+        tvCoordinates.setText(String.format("%.6f, %.6f", pt.getY(), pt.getX()));
 
         Map<String, AttachItem> attaches = feature.getAttachments();
         if (attaches.size() > 0) {
@@ -100,27 +93,19 @@ public class TreeDetailsFragment extends Fragment implements View.OnClickListene
             ILayer layer = mapBase.getLayerByName(Constants.KEY_MAIN);
 
             File attachFolder = new File(layer.getPath(), Long.toString(feature.getId()));
-            for(String key : attaches.keySet()) {
+            for (String key : attaches.keySet()) {
                 File attachFile = new File(attachFolder, key);
                 paths.add(attachFile.getPath());
             }
-            final PhotoPicker gallery = new PhotoPicker(getActivity(), true);
-            int px = ControlHelper.dpToPx(16, getResources());
-            gallery.setDefaultPreview(true);
-            gallery.setPadding(px, 0, px, 0);
+
             gallery.post(new Runnable() {
                 @Override
                 public void run() {
                     gallery.restoreImages(paths);
                 }
             });
-
-            frameLayout.addView(gallery);
-        }
-        else {
-            frameLayout.removeAllViews();
-        }
-
+        } else
+            gallery.setVisibility(View.GONE);
 
         tvGirth.setText(feature.getFieldValueAsString(Constants.KEY_LT_GIRTH));
         tvAge.setText(feature.getFieldValueAsString(Constants.KEY_LT_AGE));
@@ -134,7 +119,7 @@ public class TreeDetailsFragment extends Fragment implements View.OnClickListene
             case R.id.delete_action:
                 MapBase mapBase = MapBase.getInstance();
                 ILayer layer = mapBase.getLayerByName(Constants.KEY_MAIN);
-                if(layer != null) {
+                if (layer != null) {
                     VectorLayer vectorLayer = (VectorLayer) layer;
                     vectorLayer.deleteAddChanges(currentFeature.getId());
                     currentFeature = null;
@@ -156,7 +141,7 @@ public class TreeDetailsFragment extends Fragment implements View.OnClickListene
     }
 
     private void edit() {
-        if(null == currentFeature)
+        if (null == currentFeature)
             return;
         MainActivity activity = (MainActivity) getActivity();
         activity.editTree(currentFeature.getId());

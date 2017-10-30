@@ -309,7 +309,7 @@ public class MapFragment
             if (!items.isEmpty()) {
                 Feature treeFeature = null;
                 for(long featureId : items) {
-                    treeFeature = layerTrees.getFeature(featureId);
+                    treeFeature = layerTrees.getFeatureWithAttaches(featureId);
                     if(null != treeFeature)
                         break;
                 }
