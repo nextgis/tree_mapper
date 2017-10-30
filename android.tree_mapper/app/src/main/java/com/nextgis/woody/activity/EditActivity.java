@@ -24,6 +24,7 @@ package com.nextgis.woody.activity;
 
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -535,9 +536,7 @@ public class EditActivity extends NGActivity implements View.OnClickListener {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                AlertDialog.Builder confirmation = new AlertDialog.Builder(this);
-                confirmation.setTitle(R.string.are_you_sure).setMessage(R.string.unsaved_data).setPositiveButton(R.string.ok, null)
-                            .setNegativeButton(R.string.cancel, null);
+                showConfirmation();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -549,6 +548,23 @@ public class EditActivity extends NGActivity implements View.OnClickListener {
         if (currentStep > 1)
             onPrevious();
         else
-            super.onBackPressed();
+            showConfirmation();
+    }
+
+    private void showConfirmation() {
+        if (values.size() == 0) {
+            finish();
+            return;
+        }
+
+        AlertDialog.Builder confirmation = new AlertDialog.Builder(this);
+        confirmation.setTitle(R.string.are_you_sure).setMessage(R.string.unsaved_data)
+                    .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            finish();
+                        }
+                    }).setNegativeButton(R.string.cancel, null);
+        confirmation.show();
     }
 }

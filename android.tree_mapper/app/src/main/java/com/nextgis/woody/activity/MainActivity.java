@@ -159,6 +159,7 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        createPermissionsView();
         checkPermissions();
     }
 
@@ -185,7 +186,7 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
 
     @Override
     protected void setToolbar(int toolbarId){
-        Toolbar toolbar = (Toolbar) findViewById(toolbarId);
+        Toolbar toolbar = findViewById(toolbarId);
         toolbar.getBackground().setAlpha(getToolbarAlpha());
         setSupportActionBar(toolbar);
     }
@@ -531,7 +532,7 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
 
             @Override
             protected void onPostExecute(String result) {
-                if (mProgressDialog.isShowing())
+                if (mProgressDialog.isShowing() && !MainActivity.this.isFinishing())
                     mProgressDialog.dismiss();
                 Toast.makeText(MainActivity.this, result, Toast.LENGTH_LONG).show();
                 refreshActivityView();
@@ -612,7 +613,7 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
     }
 
     public void showTreeDetails(Feature treeFeature) {
-        FrameLayout fl = (FrameLayout) findViewById(R.id.tree_details);
+        FrameLayout fl = findViewById(R.id.tree_details);
         if (fl.getVisibility() == View.GONE) {
             // hide fab
             findViewById(R.id.add_tree).setVisibility(View.GONE);
