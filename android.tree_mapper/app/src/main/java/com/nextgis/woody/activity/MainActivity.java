@@ -93,6 +93,7 @@ import java.io.IOException;
 import java.util.Random;
 
 import static com.nextgis.maplib.util.Constants.NOT_FOUND;
+import static com.nextgis.maplibui.util.SettingsConstantsUI.KEY_PREF_SYNC_PERIOD;
 
 public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAccountListener, View.OnClickListener {
     protected final static int PERMISSIONS_REQUEST = 1;
@@ -144,11 +145,13 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
 
             final MainApplication app = (MainApplication) getApplication();
             app.setUserData(account.name, Constants.KEY_IS_AUTHORIZED, token);
+            long interval = com.nextgis.maplib.util.Constants.DEFAULT_SYNC_PERIOD;
+            Bundle bundle = new Bundle();
+            bundle.putString(KEY_PREF_SYNC_PERIOD, interval + "");
 
             //set sync with server
             ContentResolver.setSyncAutomatically(account, app.getAuthority(), true);
-            ContentResolver.addPeriodicSync( account, app.getAuthority(), Bundle.EMPTY,
-                    com.nextgis.maplib.util.Constants.DEFAULT_SYNC_PERIOD);
+            ContentResolver.addPeriodicSync(account, app.getAuthority(), bundle, interval);
 
             // goto step 2
             refreshActivityView();
