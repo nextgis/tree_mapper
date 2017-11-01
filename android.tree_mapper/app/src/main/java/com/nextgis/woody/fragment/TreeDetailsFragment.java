@@ -27,8 +27,10 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.keenfin.easypicker.PhotoPicker;
 import com.nextgis.maplib.api.ILayer;
 import com.nextgis.maplib.datasource.Feature;
 import com.nextgis.maplib.datasource.GeoPoint;
@@ -42,6 +44,7 @@ import com.nextgis.woody.util.Constants;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -55,6 +58,7 @@ public class TreeDetailsFragment extends Fragment implements View.OnClickListene
     private TextView tvAge;
     private TextView tvState;
     private TextView tvHeight;
+    private TextView tvYear;
     private Feature currentFeature;
     private PhotoGallery gallery;
 
@@ -66,8 +70,9 @@ public class TreeDetailsFragment extends Fragment implements View.OnClickListene
         tvGirth = view.findViewById(R.id.girth);
         tvAge = view.findViewById(R.id.age);
         tvState = view.findViewById(R.id.state);
+        tvYear = view.findViewById(R.id.year);
         tvHeight = view.findViewById(R.id.height);
-        gallery= view.findViewById(R.id.photo_gallery);
+        gallery = view.findViewById(R.id.photo_gallery);
 
         view.findViewById(R.id.close_action).setOnClickListener(this);
         view.findViewById(R.id.delete_action).setOnClickListener(this);
@@ -84,14 +89,17 @@ public class TreeDetailsFragment extends Fragment implements View.OnClickListene
         tvSpecies.setText(feature.getFieldValueAsString(Constants.KEY_LT_SPECIES));
         GeoPoint pt = (GeoPoint) feature.getGeometry().copy();
         pt.project(4326);
-        tvCoordinates.setText(String.format("%.6f, %.6f", pt.getY(), pt.getX()));
+        tvCoordinates.setText(String.format(Locale.UK, "%.6f, %.6f", pt.getY(), pt.getX()));
 
         Map<String, AttachItem> attaches = feature.getAttachments();
         if (attaches.size() > 0) {
-            final ArrayList<String> paths = new ArrayList<>();
+            PhotoPicker.PhotoAdapter adapter = gallery.new PhotoAdapter(true);
+            gallery.setAdapter(adapter);
+
             MapBase mapBase = MapBase.getInstance();
             ILayer layer = mapBase.getLayerByName(Constants.KEY_MAIN);
 
+            final ArrayList<String> paths = new ArrayList<>();
             File attachFolder = new File(layer.getPath(), Long.toString(feature.getId()));
             for (String key : attaches.keySet()) {
                 File attachFile = new File(attachFolder, key);
@@ -107,10 +115,21 @@ public class TreeDetailsFragment extends Fragment implements View.OnClickListene
         } else
             gallery.setVisibility(View.GONE);
 
+        int id = feature.getFieldValueIndex(Constants.KEY_LT_GIRTH);
+        ((RelativeLayout) tvGirth.getParent().getParent()).setVisibility(feature.isValuePresent(id) ? View.VISIBLE : View.GONE);
         tvGirth.setText(feature.getFieldValueAsString(Constants.KEY_LT_GIRTH));
+        id = feature.getFieldValueIndex(Constants.KEY_LT_AGE);
+        ((RelativeLayout) tvAge.getParent().getParent()).setVisibility(feature.isValuePresent(id) ? View.VISIBLE : View.GONE);
         tvAge.setText(feature.getFieldValueAsString(Constants.KEY_LT_AGE));
+        id = feature.getFieldValueIndex(Constants.KEY_LT_STATE);
+        ((RelativeLayout) tvState.getParent().getParent()).setVisibility(feature.isValuePresent(id) ? View.VISIBLE : View.GONE);
         tvState.setText(feature.getFieldValueAsString(Constants.KEY_LT_STATE));
+        id = feature.getFieldValueIndex(Constants.KEY_LT_HEIGHT);
+        ((RelativeLayout) tvHeight.getParent().getParent()).setVisibility(feature.isValuePresent(id) ? View.VISIBLE : View.GONE);
         tvHeight.setText(feature.getFieldValueAsString(Constants.KEY_LT_HEIGHT));
+        id = feature.getFieldValueIndex(Constants.KEY_LT_YEAR);
+        ((RelativeLayout) tvYear.getParent().getParent()).setVisibility(feature.isValuePresent(id) ? View.VISIBLE : View.GONE);
+        tvYear.setText(feature.getFieldValueAsString(Constants.KEY_LT_YEAR));
     }
 
     @Override
