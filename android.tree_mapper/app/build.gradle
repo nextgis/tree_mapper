@@ -3,6 +3,18 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 26
     buildToolsVersion "26.0.2"
+
+    // Setup the Sentry DSN from the file 'sentry.properties', which should contain
+    // sentry.dsn=https://publicKey:secretKey@host:port/1?options
+    // DO NOT PUBLIC the file 'sentry.properties' !!!
+    File sentryPropFile = rootProject.file('sentry.properties')
+    def String sentryDsn = ""
+    if (sentryPropFile.exists()) {
+        Properties sentryProp = new Properties()
+        sentryProp.load(sentryPropFile.newDataInputStream())
+        sentryDsn = sentryProp.get("sentry.dsn")
+    }
+
     defaultConfig {
         applicationId "com.nextgis.woody"
         minSdkVersion 14
@@ -11,6 +23,7 @@ android {
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         archivesBaseName = "woody-$versionName"
+        buildConfigField "String", "SENTRY_DSN", "\"${sentryDsn}\""
     }
     buildTypes {
         release {
@@ -37,6 +50,7 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     testCompile 'junit:junit:4.12'
+    compile 'com.joshdholtz.sentry:sentry-android:1.6.0'
     compile 'com.android.support:appcompat-v7:26.1.0'
     compile 'com.android.support:preference-v7:26.1.0'
     compile 'com.android.support:design:26.1.0'

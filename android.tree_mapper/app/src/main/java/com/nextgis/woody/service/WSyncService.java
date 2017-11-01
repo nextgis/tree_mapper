@@ -23,6 +23,7 @@ package com.nextgis.woody.service;
 
 import android.content.Context;
 
+import com.joshdholtz.sentry.Sentry;
 import com.nextgis.maplib.datasource.ngw.SyncAdapter;
 import com.nextgis.maplib.service.NGWSyncService;
 
@@ -35,6 +36,7 @@ public class WSyncService
             Context context,
             boolean autoInitialize)
     {
-        return new SyncAdapter(context, autoInitialize);
+        Sentry.captureMessage("WSyncService createSyncAdapter");
+        return new WSyncAdapter(context, autoInitialize);
     }
 }

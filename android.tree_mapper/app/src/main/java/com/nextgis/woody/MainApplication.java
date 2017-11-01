@@ -28,6 +28,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.preference.PreferenceManager;
 
+import com.joshdholtz.sentry.Sentry;
 import com.nextgis.maplib.map.MapBase;
 import com.nextgis.maplib.map.MapDrawable;
 import com.nextgis.maplib.util.SettingsConstants;
@@ -52,6 +53,9 @@ import java.io.File;
 public class MainApplication extends GISApplication {
     @Override
     public void onCreate() {
+        Sentry.init(this, BuildConfig.SENTRY_DSN);
+        Sentry.captureMessage("Woody Sentry init", Sentry.SentryEventLevel.DEBUG);
+
         super.onCreate();
         if (getAccount(Constants.ACCOUNT_NAME) == null)
             VKSdk.initialize(this);
