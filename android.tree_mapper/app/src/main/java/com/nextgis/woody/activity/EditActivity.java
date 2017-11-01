@@ -72,6 +72,15 @@ import java.util.Map;
 
 import static com.nextgis.maplib.util.Constants.FIELD_GEOM;
 import static com.nextgis.maplib.util.Constants.NOT_FOUND;
+import static com.nextgis.woody.util.Constants.KEY_LT_CROWN_BEG;
+import static com.nextgis.woody.util.Constants.KEY_LT_CROWN_RADE;
+import static com.nextgis.woody.util.Constants.KEY_LT_CROWN_RADN;
+import static com.nextgis.woody.util.Constants.KEY_LT_CROWN_RADS;
+import static com.nextgis.woody.util.Constants.KEY_LT_CROWN_RADW;
+import static com.nextgis.woody.util.Constants.KEY_LT_GIRTH;
+import static com.nextgis.woody.util.Constants.KEY_LT_HEIGHT;
+import static com.nextgis.woody.util.Constants.KEY_LT_INJURY;
+import static com.nextgis.woody.util.Constants.KEY_LT_PLACEMENT;
 import static com.nextgis.woody.util.Constants.KEY_LT_YEAR;
 import static com.nextgis.woody.util.Constants.WTAG;
 
@@ -103,9 +112,9 @@ public class EditActivity extends NGActivity implements View.OnClickListener {
         setContentView(R.layout.activity_edit);
         setToolbar(R.id.main_toolbar);
 
-        btLeft = (Button) findViewById(R.id.left_button);
+        btLeft = findViewById(R.id.left_button);
         btLeft.setOnClickListener(this);
-        btRight = (Button) findViewById(R.id.right_button);
+        btRight = findViewById(R.id.right_button);
         btRight.setOnClickListener(this);
 
         values = new ContentValues();
@@ -179,7 +188,7 @@ public class EditActivity extends NGActivity implements View.OnClickListener {
     private void firstStep() {
         currentStep = 1;
         setTitle(getText(R.string.point_on_map));
-        Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar);
+        Toolbar toolbar = findViewById(R.id.main_toolbar);
         toolbar.setSubtitle("1/6");
 
         btLeft.setText(R.string.cancel);
@@ -217,7 +226,7 @@ public class EditActivity extends NGActivity implements View.OnClickListener {
     private void secondStep() {
         currentStep = 2;
         setTitle(getText(R.string.species));
-        Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar);
+        Toolbar toolbar = findViewById(R.id.main_toolbar);
         toolbar.setSubtitle("2/6");
         btLeft.setText(R.string.back);
 
@@ -240,7 +249,7 @@ public class EditActivity extends NGActivity implements View.OnClickListener {
     private void thirdStep() {
         currentStep = 3;
         setTitle(getText(R.string.status));
-        Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar);
+        Toolbar toolbar = findViewById(R.id.main_toolbar);
         toolbar.setSubtitle("3/6");
 
         FragmentManager fm = getSupportFragmentManager();
@@ -254,7 +263,7 @@ public class EditActivity extends NGActivity implements View.OnClickListener {
     private void fourthStep() {
         currentStep = 4;
         setTitle(getText(R.string.age));
-        Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar);
+        Toolbar toolbar = findViewById(R.id.main_toolbar);
         toolbar.setSubtitle("4/6");
 
         FragmentManager fm = getSupportFragmentManager();
@@ -268,7 +277,7 @@ public class EditActivity extends NGActivity implements View.OnClickListener {
     private void fifthStep() {
         currentStep = 5;
         setTitle(getText(R.string.year));
-        Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar);
+        Toolbar toolbar = findViewById(R.id.main_toolbar);
         toolbar.setSubtitle("5/6");
         btRight.setText(R.string.next);
 
@@ -291,7 +300,7 @@ public class EditActivity extends NGActivity implements View.OnClickListener {
     private void sixthStep() {
         currentStep = 6;
         setTitle(getText(R.string.photo));
-        Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar);
+        Toolbar toolbar = findViewById(R.id.main_toolbar);
         toolbar.setSubtitle("6/6");
         btRight.setText(R.string.finish);
 
@@ -365,7 +374,7 @@ public class EditActivity extends NGActivity implements View.OnClickListener {
                 fourthStep();
                 break;
             case 6:
-                PhotoGallery gallery = (PhotoGallery) findViewById(com.nextgis.maplibui.R.id.pg_photos);
+                PhotoGallery gallery = findViewById(com.nextgis.maplibui.R.id.pg_photos);
                 if (gallery != null)
                     mImages = gallery.getImagesPath();
                 fifthStep();
@@ -465,7 +474,7 @@ public class EditActivity extends NGActivity implements View.OnClickListener {
     }
 
     private void putAttaches() {
-        PhotoGallery gallery = (PhotoGallery) findViewById(com.nextgis.maplibui.R.id.pg_photos);
+        PhotoGallery gallery = findViewById(com.nextgis.maplibui.R.id.pg_photos);
 
         if (gallery != null && mFeatureId != NOT_FOUND) {
             List<Integer> deletedAttaches = gallery.getDeletedAttaches();
@@ -527,9 +536,23 @@ public class EditActivity extends NGActivity implements View.OnClickListener {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        PhotoGallery gallery = (PhotoGallery) findViewById(com.nextgis.maplibui.R.id.pg_photos);
+        PhotoGallery gallery = findViewById(com.nextgis.maplibui.R.id.pg_photos);
         if (gallery != null)
             gallery.onActivityResult(requestCode, resultCode, data);
+    }
+
+    public void putExtras(Intent data) {
+        if (data != null && data.getExtras() != null) {
+            values.put(KEY_LT_HEIGHT, data.getStringExtra(KEY_LT_HEIGHT));
+            values.put(KEY_LT_PLACEMENT, data.getStringExtra(KEY_LT_PLACEMENT));
+            values.put(KEY_LT_INJURY, data.getStringExtra(KEY_LT_INJURY));
+            values.put(KEY_LT_GIRTH, data.getDoubleExtra(KEY_LT_GIRTH, 0));
+            values.put(KEY_LT_CROWN_BEG, data.getDoubleExtra(KEY_LT_CROWN_BEG, 0));
+            values.put(KEY_LT_CROWN_RADE, data.getDoubleExtra(KEY_LT_CROWN_RADE, 0));
+            values.put(KEY_LT_CROWN_RADW, data.getDoubleExtra(KEY_LT_CROWN_RADW, 0));
+            values.put(KEY_LT_CROWN_RADN, data.getDoubleExtra(KEY_LT_CROWN_RADN, 0));
+            values.put(KEY_LT_CROWN_RADS, data.getDoubleExtra(KEY_LT_CROWN_RADS, 0));
+        }
     }
 
     @Override

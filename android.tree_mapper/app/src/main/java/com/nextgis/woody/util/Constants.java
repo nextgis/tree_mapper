@@ -55,6 +55,11 @@ public interface Constants {
     String KEY_LT_YEAR = "year";
     String KEY_LT_INJURY = "injury";
     String KEY_LT_SPECIES = "species";
+    String KEY_LT_CROWN_BEG = "krone_beg";
+    String KEY_LT_CROWN_RADS = "krone_rads";
+    String KEY_LT_CROWN_RADN = "krone_radn";
+    String KEY_LT_CROWN_RADE = "krone_rade";
+    String KEY_LT_CROWN_RADW = "krone_radw";
     int KEY_COUNT = 9; // mast be equal of KEY_ strings count
 
     String FIELD_DATETIME = "datetime";

@@ -57,4 +57,12 @@
     <string name="message_important">Important</string>
     <string name="message_need_permissions">To work properly the application needs permissions to be set for GPS, external storage and accounts.</string>
     <string name="unsaved_data">All unsaved data will be lost. Continue?</string>
+    <string name="injury">Injuries</string>
+    <string name="placement">Placement</string>
+    <string name="crown_e">Crown radius (east)</string>
+    <string name="crown_n">Crown radius (north)</string>
+    <string name="crown_w">Crown radius (west)</string>
+    <string name="crown_s">Crown radius (south)</string>
+    <string name="crown_begin">Crown beginning</string>
+    <string name="params_for_experts">Params for experts</string>
 </resources>
