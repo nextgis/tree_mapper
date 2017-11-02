@@ -540,13 +540,20 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
             @Override
             protected void onPostExecute(String result) {
                 if (mProgressDialog.isShowing() && !MainActivity.this.isFinishing())
-                    mProgressDialog.dismiss();
+                    dismissWithExceptionHandling(mProgressDialog);
                 Toast.makeText(MainActivity.this, result, Toast.LENGTH_LONG).show();
                 refreshActivityView();
             }
         }
 
         new DownloadTask().execute(account);
+    }
+
+    public void dismissWithExceptionHandling(ProgressDialog dialog) {
+        try {
+            dialog.dismiss();
+        } catch (final IllegalArgumentException ignored) {
+        } catch (final Exception ignored) {}
     }
 
     private boolean isLookupTable(INGWResource resource) {
