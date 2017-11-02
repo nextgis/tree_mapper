@@ -59,6 +59,7 @@ import com.nextgis.maplib.datasource.ngw.Connection;
 import com.nextgis.maplib.datasource.ngw.INGWResource;
 import com.nextgis.maplib.datasource.ngw.Resource;
 import com.nextgis.maplib.datasource.ngw.ResourceGroup;
+import com.nextgis.maplib.display.TMSRenderer;
 import com.nextgis.maplib.map.Layer;
 import com.nextgis.maplib.map.MapBase;
 import com.nextgis.maplib.map.NGWLookupTable;
@@ -460,6 +461,10 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
                 layer.setVisible(true);
                 layer.setCacheSizeMultiply(2);
                 mMap.addLayer(layer);
+
+                TMSRenderer tmsRenderer  = (TMSRenderer) layer.getRenderer();
+                tmsRenderer.setContrastBrightness(1, 0, true);
+//                layer.setRenderer(tmsRenderer);
 
                 // 3. Get tables for map.
 
