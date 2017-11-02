@@ -163,7 +163,6 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         createPermissionsView();
-        checkPermissions();
     }
 
     private void start() {
