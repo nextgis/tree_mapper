@@ -62,6 +62,8 @@ public class PhotoFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 Intent experts = new Intent(getActivity(), ExpertsActivity.class);
+                Bundle extras = ((EditActivity) getActivity()).getExtras();
+                experts.putExtras(extras);
                 startActivityForResult(experts, EXPERTS);
             }
         });

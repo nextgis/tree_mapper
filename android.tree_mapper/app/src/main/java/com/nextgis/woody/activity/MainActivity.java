@@ -98,6 +98,8 @@ import static com.nextgis.maplibui.util.SettingsConstantsUI.KEY_PREF_SYNC_PERIOD
 
 public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAccountListener, View.OnClickListener {
     protected final static int PERMISSIONS_REQUEST = 1;
+    protected final static int EDIT_REQUEST = 25;
+
     private static final int VK_SIGN_IN = 10485;
     private static final int FB_SIGN_IN = 64206;
 
@@ -134,7 +136,7 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
             intent.putExtra(SettingsConstants.KEY_PREF_SCROLL_X, pt.getX());
             intent.putExtra(SettingsConstants.KEY_PREF_SCROLL_Y, pt.getY());
         }
-        startActivity(intent);
+        startActivityForResult(intent, EDIT_REQUEST);
     }
 
     @Override
@@ -287,7 +289,17 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
             case FB_SIGN_IN:
                 handleFBResult(requestCode, resultCode, data);
                 break;
+            case EDIT_REQUEST:
+                updateTreeView();
+                break;
         }
+    }
+
+    private void updateTreeView() {
+        FragmentManager fm = getSupportFragmentManager();
+        TreeDetailsFragment treeDetailsFragment = (TreeDetailsFragment) fm.findFragmentByTag(Constants.FRAGMENT_TREE_DETAILS);
+        if (treeDetailsFragment != null)
+            treeDetailsFragment.refill();
     }
 
     private void handleFBResult(int requestCode, int resultCode, Intent data) {

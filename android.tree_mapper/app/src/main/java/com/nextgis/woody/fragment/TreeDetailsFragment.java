@@ -31,6 +31,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.keenfin.easypicker.PhotoPicker;
+import com.nextgis.maplib.api.IGISApplication;
 import com.nextgis.maplib.api.ILayer;
 import com.nextgis.maplib.datasource.Feature;
 import com.nextgis.maplib.datasource.GeoPoint;
@@ -38,6 +39,7 @@ import com.nextgis.maplib.map.MapBase;
 import com.nextgis.maplib.map.VectorLayer;
 import com.nextgis.maplib.util.AttachItem;
 import com.nextgis.maplibui.control.PhotoGallery;
+import com.nextgis.woody.MainApplication;
 import com.nextgis.woody.R;
 import com.nextgis.woody.activity.MainActivity;
 import com.nextgis.woody.util.Constants;
@@ -164,5 +166,18 @@ public class TreeDetailsFragment extends Fragment implements View.OnClickListene
             return;
         MainActivity activity = (MainActivity) getActivity();
         activity.editTree(currentFeature.getId());
+    }
+
+    public void refill() {
+        IGISApplication app = (MainApplication) getActivity().getApplication();
+        VectorLayer layerTrees = (VectorLayer) app.getMap().getLayerByName(Constants.KEY_MAIN);
+
+        if (null != layerTrees) {
+            Feature treeFeature = layerTrees.getFeatureWithAttaches(currentFeature.getId());
+            if (null != treeFeature) {
+                currentFeature = treeFeature;
+                fill(currentFeature);
+            }
+        }
     }
 }

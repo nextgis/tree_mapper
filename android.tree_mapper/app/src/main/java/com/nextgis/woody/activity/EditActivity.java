@@ -541,17 +541,52 @@ public class EditActivity extends NGActivity implements View.OnClickListener {
             gallery.onActivityResult(requestCode, resultCode, data);
     }
 
+    public Bundle getExtras() {
+        Bundle extras = new Bundle();
+        if (values != null) {
+            if (values.get(KEY_LT_GIRTH) != null)
+                extras.putDouble(KEY_LT_GIRTH, values.getAsDouble(KEY_LT_GIRTH));
+            if (values.get(KEY_LT_CROWN_BEG) != null)
+                extras.putDouble(KEY_LT_CROWN_BEG, values.getAsDouble(KEY_LT_CROWN_BEG));
+            if (values.get(KEY_LT_CROWN_RADE) != null)
+                extras.putDouble(KEY_LT_CROWN_RADE, values.getAsDouble(KEY_LT_CROWN_RADE));
+            if (values.get(KEY_LT_CROWN_RADW) != null)
+                extras.putDouble(KEY_LT_CROWN_RADW, values.getAsDouble(KEY_LT_CROWN_RADW));
+            if (values.get(KEY_LT_CROWN_RADN) != null)
+                extras.putDouble(KEY_LT_CROWN_RADN, values.getAsDouble(KEY_LT_CROWN_RADN));
+            if (values.get(KEY_LT_CROWN_RADS) != null)
+                extras.putDouble(KEY_LT_CROWN_RADS, values.getAsDouble(KEY_LT_CROWN_RADS));
+            if (values.get(KEY_LT_INJURY) != null)
+                extras.putString(KEY_LT_INJURY, values.getAsString(KEY_LT_INJURY));
+            if (values.get(KEY_LT_PLACEMENT) != null)
+                extras.putString(KEY_LT_PLACEMENT, values.getAsString(KEY_LT_PLACEMENT));
+            if (values.get(KEY_LT_HEIGHT) != null)
+                extras.putString(KEY_LT_HEIGHT, values.getAsString(KEY_LT_HEIGHT));
+        }
+
+        return extras;
+    }
+
     public void putExtras(Intent data) {
         if (data != null && data.getExtras() != null) {
-            values.put(KEY_LT_HEIGHT, data.getStringExtra(KEY_LT_HEIGHT));
-            values.put(KEY_LT_PLACEMENT, data.getStringExtra(KEY_LT_PLACEMENT));
-            values.put(KEY_LT_INJURY, data.getStringExtra(KEY_LT_INJURY));
-            values.put(KEY_LT_GIRTH, data.getDoubleExtra(KEY_LT_GIRTH, 0));
-            values.put(KEY_LT_CROWN_BEG, data.getDoubleExtra(KEY_LT_CROWN_BEG, 0));
-            values.put(KEY_LT_CROWN_RADE, data.getDoubleExtra(KEY_LT_CROWN_RADE, 0));
-            values.put(KEY_LT_CROWN_RADW, data.getDoubleExtra(KEY_LT_CROWN_RADW, 0));
-            values.put(KEY_LT_CROWN_RADN, data.getDoubleExtra(KEY_LT_CROWN_RADN, 0));
-            values.put(KEY_LT_CROWN_RADS, data.getDoubleExtra(KEY_LT_CROWN_RADS, 0));
+            if (data.hasExtra(KEY_LT_HEIGHT))
+                values.put(KEY_LT_HEIGHT, data.getStringExtra(KEY_LT_HEIGHT));
+            if (data.hasExtra(KEY_LT_PLACEMENT))
+                values.put(KEY_LT_PLACEMENT, data.getStringExtra(KEY_LT_PLACEMENT));
+            if (data.hasExtra(KEY_LT_INJURY))
+                values.put(KEY_LT_INJURY, data.getStringExtra(KEY_LT_INJURY));
+            if (data.hasExtra(KEY_LT_GIRTH))
+                values.put(KEY_LT_GIRTH, data.getDoubleExtra(KEY_LT_GIRTH, 0));
+            if (data.hasExtra(KEY_LT_CROWN_BEG))
+                values.put(KEY_LT_CROWN_BEG, data.getDoubleExtra(KEY_LT_CROWN_BEG, 0));
+            if (data.hasExtra(KEY_LT_CROWN_RADE))
+                values.put(KEY_LT_CROWN_RADE, data.getDoubleExtra(KEY_LT_CROWN_RADE, 0));
+            if (data.hasExtra(KEY_LT_CROWN_RADW))
+                values.put(KEY_LT_CROWN_RADW, data.getDoubleExtra(KEY_LT_CROWN_RADW, 0));
+            if (data.hasExtra(KEY_LT_CROWN_RADN))
+                values.put(KEY_LT_CROWN_RADN, data.getDoubleExtra(KEY_LT_CROWN_RADN, 0));
+            if (data.hasExtra(KEY_LT_CROWN_RADS))
+                values.put(KEY_LT_CROWN_RADS, data.getDoubleExtra(KEY_LT_CROWN_RADS, 0));
         }
     }
 
