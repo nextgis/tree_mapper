@@ -433,4 +433,8 @@ public class MapFragment
                 break;
         }
     }
+
+    public GeoPoint getCurrentLocation() {
+        return mCurrentCenter;
+    }
 }

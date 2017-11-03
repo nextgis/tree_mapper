@@ -133,6 +133,8 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
         intent.putExtra(Constants.FEATURE_ID, i);
         if (mapFragment != null) {
             GeoPoint pt = mapFragment.getCenter();
+            if (i == NOT_FOUND && mapFragment.getCurrentLocation() != null)
+                pt = mapFragment.getCurrentLocation();
             intent.putExtra(SettingsConstants.KEY_PREF_SCROLL_X, pt.getX());
             intent.putExtra(SettingsConstants.KEY_PREF_SCROLL_Y, pt.getY());
         }
@@ -290,7 +292,8 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
                 handleFBResult(requestCode, resultCode, data);
                 break;
             case EDIT_REQUEST:
-                updateTreeView();
+                if (resultCode == RESULT_OK)
+                    updateTreeView();
                 break;
         }
     }

@@ -432,6 +432,7 @@ public class EditActivity extends NGActivity implements View.OnClickListener {
                 Toast.makeText(this, getText(com.nextgis.maplibui.R.string.error_db_update), Toast.LENGTH_SHORT).show();
                 return;
             }
+            setResult(RESULT_OK);
         }
 
         // add photos
