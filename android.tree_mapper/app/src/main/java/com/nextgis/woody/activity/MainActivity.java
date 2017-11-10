@@ -51,6 +51,7 @@ import com.facebook.FacebookException;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.login.LoginResult;
+import com.joshdholtz.sentry.Sentry;
 import com.nextgis.maplib.api.ILayer;
 import com.nextgis.maplib.api.ILayerView;
 import com.nextgis.maplib.datasource.Feature;
@@ -176,14 +177,16 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
         final Account account = app.getAccount(Constants.ACCOUNT_NAME);
         // check if has safe forest account
         if (account == null) {
+            Sentry.captureMessage("MainActivity account is null");
             createAccountView();
         } else {
             // check basic layers
             if (!hasBasicLayers(app.getMap())) {
+                Sentry.captureMessage("MainActivity create basic layers");
                 Log.d(Constants.WTAG, "Account " + Constants.ACCOUNT_NAME + " created. Run second step.");
                 createFirstRunView();
-            }
-            else {
+            } else {
+                Sentry.captureMessage("MainActivity start main view");
                 Log.d(Constants.WTAG, "Account " + Constants.ACCOUNT_NAME + " created. Layers created. Run normal view.");
                 mFirstRun = false;
                 createNormalView();
@@ -241,6 +244,7 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
     }
 
     protected void createAccountView() {
+        Sentry.captureMessage("MainActivity create account view");
         final MainApplication app = (MainApplication) getApplication();
         final Account account = app.getAccount(Constants.ACCOUNT_NAME);
         if (account != null) {
@@ -250,23 +254,28 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
         FragmentManager fm = getSupportFragmentManager();
         LoginFragment ngwLoginFragment = (LoginFragment) fm.findFragmentByTag(Constants.FRAGMENT_LOGIN);
 
-        if (ngwLoginFragment == null)
+        if (ngwLoginFragment == null) {
             ngwLoginFragment = new LoginFragment();
+            Sentry.captureMessage("MainActivity create new login fragment");
+        }
 
         FacebookCallback<LoginResult> callback = new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
                 getFBUserData(loginResult);
+                Sentry.captureMessage("MainActivity FB success");
             }
 
             @Override
             public void onCancel() {
                 Toast.makeText(MainActivity.this, R.string.canceled, Toast.LENGTH_SHORT).show();
+                Sentry.captureMessage("MainActivity FB cancel");
             }
 
             @Override
             public void onError(FacebookException exception) {
                 Toast.makeText(MainActivity.this, R.string.error_auth, Toast.LENGTH_SHORT).show();
+                Sentry.captureMessage("MainActivity FB error: " + exception.getMessage());
             }
         };
 
@@ -319,13 +328,18 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
             @Override
             public void onResult(VKAccessToken res) {
                 getVKUserData(res.email);
+                Sentry.captureMessage("MainActivity VK success");
             }
 
             @Override
             public void onError(VKError error) {
                 int message = R.string.error_auth;
-                if (error.errorCode == VKError.VK_CANCELED)
+                if (error.errorCode == VKError.VK_CANCELED) {
                     message = R.string.canceled;
+                    Sentry.captureMessage("MainActivity VK cancel");
+                } else {
+                    Sentry.captureMessage("MainActivity VK error: " + error.errorMessage);
+                }
 
                 Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
             }
@@ -337,6 +351,7 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
         GraphRequest request = GraphRequest.newMeRequest(token, new GraphRequest.GraphJSONObjectCallback() {
             @Override
             public void onCompleted(JSONObject user, GraphResponse response) {
+                Sentry.captureMessage("MainActivity FB request completed");
                 String email = user.optString("email");
                 String name = user.optString("name");
                 signup(name, email);
@@ -353,6 +368,7 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
             @SuppressWarnings("unchecked")
             @Override
             public void onComplete(VKResponse response) {
+                Sentry.captureMessage("MainActivity VK request completed");
                 VKApiUser user = ((VKList<VKApiUser>)response.parsedModel).get(0);
                 signup(user.first_name + " " + user.last_name, email);
             }
@@ -428,6 +444,7 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
                 final String sLogin = app.getAccountLogin(account);
                 final String sPassword = app.getAccountPassword(account);
                 final String URL = app.getAccountUrl(account);
+                Sentry.captureMessage("MainActivity load data from " + URL + " for user " + sLogin);
 
                 if (TextUtils.isEmpty(URL) || TextUtils.isEmpty(sLogin)) {
                     return getString(R.string.error_auth);
