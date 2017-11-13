@@ -686,4 +686,16 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
         findViewById(R.id.add_tree).setVisibility(View.VISIBLE);
         findViewById(R.id.tree_details).setVisibility(View.GONE);
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        FragmentManager fm = getSupportFragmentManager();
+        MapFragment mapFragment = (MapFragment) fm.findFragmentByTag(Constants.FRAGMENT_MAP);
+        FragmentTransaction ft = fm.beginTransaction();
+        ft.detach(mapFragment);
+        ft.attach(mapFragment);
+        ft.commit();
+    }
 }
