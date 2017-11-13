@@ -94,6 +94,18 @@
             android:label="@string/params_for_experts"/>
 
         <service
+            android:name="com.nextgis.maplibui.account.NGWAuthenticatorService"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.accounts.AccountAuthenticator"/>
+            </intent-filter>
+            <meta-data
+                android:name="android.accounts.AccountAuthenticator"
+                android:resource="@xml/authenticator"/>
+        </service>
+
+        <service
             android:name=".service.WSyncService"
             android:exported="true"
             android:process=":sync">
