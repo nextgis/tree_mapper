@@ -51,7 +51,7 @@ public class WPreferencesActivity extends NGPreferenceActivity {
     }
 
     @Override
-    protected String getTitleString() {
+    public String getTitleString() {
         return null;
     }
 }
