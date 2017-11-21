@@ -1,7 +1,7 @@
 
 
 var config = {
-    NGWLayerURL: 'http://176.9.38.120/tree_mapping/api/resource/10',
+    NGWLayerURL: 'http://citywoody.nextgis.com/api/resource/10',
     NGWPhotoThumbnailSize : '400x300',
     NGWLayerAttribution:'<a href="http://nextgis.ru/">NextGIS</a>',
 
