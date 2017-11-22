@@ -693,9 +693,11 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
 
         FragmentManager fm = getSupportFragmentManager();
         MapFragment mapFragment = (MapFragment) fm.findFragmentByTag(Constants.FRAGMENT_MAP);
-        FragmentTransaction ft = fm.beginTransaction();
-        ft.detach(mapFragment);
-        ft.attach(mapFragment);
-        ft.commit();
+        if (mapFragment != null) {
+            FragmentTransaction ft = fm.beginTransaction();
+            ft.detach(mapFragment);
+            ft.attach(mapFragment);
+            ft.commit();
+        }
     }
 }
