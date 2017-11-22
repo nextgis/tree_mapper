@@ -216,6 +216,7 @@ public class MapFragment
                 mMap.setZoomAndCenter(mMapZoom, new GeoPoint(mMapScrollX, mMapScrollY));
             }
             mMap.addListener(this);
+            mMap.scheduleInvalidate();
         }
 
         resumeGps();
