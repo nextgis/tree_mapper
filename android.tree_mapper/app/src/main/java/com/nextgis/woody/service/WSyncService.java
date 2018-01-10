@@ -36,7 +36,7 @@ public class WSyncService
             Context context,
             boolean autoInitialize)
     {
-        Sentry.captureMessage("WSyncService createSyncAdapter");
+//        Sentry.captureMessage("WSyncService createSyncAdapter");
         return new WSyncAdapter(context, autoInitialize);
     }
 }

@@ -42,14 +42,14 @@ public class WSyncAdapter extends SyncAdapter {
 
     @Override
     public void onPerformSync(Account account, Bundle bundle, String authority, ContentProviderClient contentProviderClient, SyncResult syncResult) {
-        Sentry.captureMessage("WSyncAdapter onPerformSync start");
+//        Sentry.captureMessage("WSyncAdapter onPerformSync start");
         super.onPerformSync(account, bundle, authority, contentProviderClient, syncResult);
-        Sentry.captureMessage("WSyncAdapter onPerformSync finish");
+//        Sentry.captureMessage("WSyncAdapter onPerformSync finish");
     }
 
     protected void sync(LayerGroup layerGroup, String authority, SyncResult syncResult) {
-        Sentry.captureMessage("WSyncAdapter sync start");
+//        Sentry.captureMessage("WSyncAdapter sync start");
         super.sync(layerGroup, authority, syncResult);
-        Sentry.captureMessage("WSyncAdapter sync finish");
+//        Sentry.captureMessage("WSyncAdapter sync finish");
     }
 }
