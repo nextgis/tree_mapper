@@ -27,6 +27,7 @@ import android.accounts.Account;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Intent;
+import android.content.SyncResult;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -37,6 +38,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -52,6 +54,7 @@ import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.login.LoginResult;
 import com.joshdholtz.sentry.Sentry;
+import com.nextgis.maplib.api.IGISApplication;
 import com.nextgis.maplib.api.ILayer;
 import com.nextgis.maplib.api.ILayerView;
 import com.nextgis.maplib.datasource.Feature;
@@ -64,8 +67,10 @@ import com.nextgis.maplib.display.TMSRenderer;
 import com.nextgis.maplib.map.Layer;
 import com.nextgis.maplib.map.MapBase;
 import com.nextgis.maplib.map.NGWLookupTable;
+import com.nextgis.maplib.map.NGWVectorLayer;
 import com.nextgis.maplib.util.GeoConstants;
 import com.nextgis.maplib.util.NGException;
+import com.nextgis.maplib.util.NGWUtil;
 import com.nextgis.maplibui.activity.NGActivity;
 import com.nextgis.maplibui.fragment.NGWLoginFragment;
 import com.nextgis.maplibui.mapui.NGWVectorLayerUI;
@@ -650,12 +655,40 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.action_sync:
+                new Thread() {
+                    @Override
+                    public void run() {
+                        testSync();
+                    }
+                }.start();
+                return true;
             case R.id.action_about:
                 Intent intentAbout = new Intent(this, AboutActivity.class);
                 startActivity(intentAbout);
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void testSync() {
+        IGISApplication application = (IGISApplication) getApplication();
+        MapBase map = application.getMap();
+        NGWVectorLayer ngwVectorLayer;
+        NGWLookupTable ngwTable;
+        for (int i = 0; i < map.getLayerCount(); i++) {
+            ILayer layer = map.getLayer(i);
+            if (layer instanceof NGWVectorLayer) {
+                ngwVectorLayer = (NGWVectorLayer) layer;
+                Pair<Integer, Integer> ver = NGWUtil.getNgwVersion(this, ngwVectorLayer.getAccountName());
+                ngwVectorLayer.sync(application.getAuthority(), ver, new SyncResult());
+            }
+            if (layer instanceof NGWLookupTable) {
+                ngwTable = (NGWLookupTable) layer;
+                Pair<Integer, Integer> ver = NGWUtil.getNgwVersion(this, ngwTable.getAccountName());
+                ngwTable.sync(application.getAuthority(), ver, new SyncResult());
+            }
+        }
     }
 
     public void showTreeDetails(Feature treeFeature) {
