@@ -75,6 +75,8 @@ import com.nextgis.maplibui.activity.NGActivity;
 import com.nextgis.maplibui.fragment.NGWLoginFragment;
 import com.nextgis.maplibui.mapui.NGWVectorLayerUI;
 import com.nextgis.maplibui.mapui.RemoteTMSLayerUI;
+import com.nextgis.maplibui.service.RebuildCacheService;
+import com.nextgis.maplibui.util.ConstantsUI;
 import com.nextgis.woody.MainApplication;
 import com.nextgis.woody.R;
 import com.nextgis.woody.display.TreeRenderer;
@@ -611,8 +613,13 @@ public class MainActivity extends NGActivity implements NGWLoginFragment.OnAddAc
 
     protected void createNormalView() {
         ILayer layer = mMap.getLayerByName(Constants.KEY_MAIN);
-        if(null == layer)
+        if (null == layer)
             return;
+
+        Intent intent = new Intent(this, RebuildCacheService.class);
+        intent.putExtra(ConstantsUI.KEY_LAYER_ID, layer.getId());
+        intent.setAction(RebuildCacheService.ACTION_ADD_TASK);
+        startService(intent);
 
         ILayerView layerView = (ILayerView) layer;
         layerView.setRenderer(new TreeRenderer((Layer) layer));
